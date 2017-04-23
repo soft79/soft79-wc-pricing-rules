@@ -160,12 +160,12 @@ class SOFT79_Meta_Box_Bulk_Rules {
      * @return string|bool WC Version number or false if WC not detected
      */
     public static function get_woocommerce_version() {
-        if ( isset( self::wc_version ) ) {
-            return self::wc_version;
+        if ( isset( self::$wc_version ) ) {
+            return self::$wc_version;
         }
 
         if ( defined( 'WC_VERSION' ) ) {
-            return self::wc_version = WC_VERSION;
+            return self::$wc_version = WC_VERSION;
         }
 
         // If get_plugins() isn't available, require it
@@ -178,10 +178,10 @@ class SOFT79_Meta_Box_Bulk_Rules {
         
         // If the plugin version number is set, return it 
         if ( isset( $plugin_folder[$plugin_file]['Version'] ) ) {
-            return self::wc_version = $plugin_folder[$plugin_file]['Version'];
+            return self::$wc_version = $plugin_folder[$plugin_file]['Version'];
         }
 
-        return self::wc_version = false; // Not found
+        return self::$wc_version = false; // Not found
     }
 
 // HTML Output helper functions
