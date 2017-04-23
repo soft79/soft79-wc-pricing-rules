@@ -184,6 +184,19 @@ class SOFT79_Meta_Box_Bulk_Rules {
         return self::$wc_version = false; // Not found
     }
 
+    /**
+     * Parse an array or comma separated string; make sure they are valid ints and return as comma separated string
+     * @param array|string $int_array 
+     * @return string comma separated int array
+     */
+    public static function comma_separated_int_array( $int_array ) {
+        //Source can be a comma separated string (select2) , or an int array (chosen)
+        if ( ! is_array( $int_array) ) {
+            $int_array = explode( ',', $int_array );
+        }
+        return implode( ',', array_filter( array_map( 'intval', $int_array ) ) );
+    }    
+
 // HTML Output helper functions
 
     /**
@@ -203,7 +216,7 @@ class SOFT79_Meta_Box_Bulk_Rules {
             }
         }
 
-        if ( $placeholder === null ) $placeholder = __( 'Search for a product&hellip', 'woocommerce' );
+        if ( $placeholder === null ) $placeholder = __( 'Search for a product&hellip;', 'woocommerce' );
 
         //In WooCommerce version 2.3.0 chosen was replaced by select2
         //In WooCommerce version 3.0 select2 v3 was replaced by select2 v4
@@ -236,8 +249,6 @@ class SOFT79_Meta_Box_Bulk_Rules {
     }
 
     /**
-     * @since 2.4.1 for WC 3.0 compatibility
-     * 
      * Renders a product selection <input>. 
      * Select2 version 3 (Since WC 2.3.0)
      * @param string $dom_id 
@@ -309,10 +320,11 @@ class SOFT79_Meta_Box_Bulk_Rules {
         
         //Extended fields
         $user_roles            = isset( $_POST['_j79_user_roles'] ) ? $_POST['_j79_user_roles'] : '';
-        $exclude_user_roles            = isset( $_POST['_j79_exclude_user_roles'] ) ? $_POST['_j79_exclude_user_roles'] : '';
+        $exclude_user_roles    = isset( $_POST['_j79_exclude_user_roles'] ) ? $_POST['_j79_exclude_user_roles'] : '';
         
-        $product_ids            = implode( ',', array_filter( array_map( 'intval', explode( ',', $_POST['product_ids'] ) ) ) );
-        $exclude_product_ids    = implode( ',', array_filter( array_map( 'intval', explode( ',', $_POST['exclude_product_ids'] ) ) ) );
+        $product_ids            = self::comma_separated_int_array(  $_POST['product_ids'] );
+        $exclude_product_ids    = self::comma_separated_int_array(  $_POST['exclude_product_ids'] );
+
         $product_categories         = isset( $_POST['product_categories'] ) ? array_map( 'intval', $_POST['product_categories'] ) : array();
         $exclude_product_categories = isset( $_POST['exclude_product_categories'] ) ? array_map( 'intval', $_POST['exclude_product_categories'] ) : array();
         $exclude_sale_items     = isset( $_POST['exclude_sale_items'] ) ? 'yes' : 'no';

@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=5T9XQ
 Tags: woocommerce, pricing, discount
 Requires at least: 4.0.0
 Tested up to: 4.3.1
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -68,6 +68,9 @@ function soft79_wcpr_min_max_price_html( $new_price_html, $original_price_html, 
 3. Optionally presents a table with available prices/discounts to the customer.
 
 == Changelog ==
+
+= 1.1.1 =
+* FIX: Product selector WooCommerce 3.0 Compatibility (Select2 v4)
 
 = 1.1.0 =
 * FIX: WooCommerce 3.0 Compatibility
