@@ -1,0 +1,360 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: SOFT79 WooCommerce Pricing Rules\n"
+"POT-Creation-Date: 2015-12-31 13:38+0100\n"
+"PO-Revision-Date: 2015-12-31 13:38+0100\n"
+"Last-Translator: \n"
+"Language-Team: Soft79 <admin@soft79.nl>\n"
+"Language: nl_NL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.6\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: _e;__;_x;_n\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: languages\n"
+
+#: includes/admin/class-meta-box-bulk-rules.php:24
+msgid "Quantity scope"
+msgstr "Telmethode"
+
+#: includes/admin/class-meta-box-bulk-rules.php:33
+msgid "Products"
+msgstr "Producten"
+
+#: includes/admin/class-meta-box-bulk-rules.php:47
+msgid "Products which need to be in the cart to use this pricing rule."
+msgstr "Producten welke in de winkelwagen moeten zitten voor deze prijsregel."
+
+#: includes/admin/class-meta-box-bulk-rules.php:53
+msgid "Exclude products"
+msgstr "Uitgesloten producten"
+
+#: includes/admin/class-meta-box-bulk-rules.php:68
+msgid "Products which must not be in the cart to use this pricing rule."
+msgstr ""
+"Producten welke niet in de winkelwagen mogen zitten voor deze prijsregel."
+
+#: includes/admin/class-meta-box-bulk-rules.php:76
+msgid "Product categories"
+msgstr "Productcategorieen"
+
+#: includes/admin/class-meta-box-bulk-rules.php:86
+msgid ""
+"A product must be in this category for the pricing rule to remain valid."
+msgstr ""
+"Een product moet in deze categorie om deze prijsregel te kunnen toepassen."
+
+#: includes/admin/class-meta-box-bulk-rules.php:93
+msgid "Exclude categories"
+msgstr "Uitgesloten categorieën "
+
+#: includes/admin/class-meta-box-bulk-rules.php:103
+msgid ""
+"Product must not be in this category for the pricing rule to remain valid."
+msgstr ""
+"Een product mag niet in deze categorie zitten om deze prijsregel te kunnen "
+"toepassen."
+
+#: includes/admin/class-meta-box-bulk-rules.php:110
+msgid "Allowed User Roles"
+msgstr "Toegestane klantrollen"
+
+#: includes/admin/class-meta-box-bulk-rules.php:111
+#: includes/admin/class-meta-box-bulk-rules.php:132
+msgid "Any role"
+msgstr "Klantrollen"
+
+#: includes/admin/class-meta-box-bulk-rules.php:124
+msgid "The pricing rule only applies to these User Roles."
+msgstr "Prijsregel geldt alleen voor deze klantrollen."
+
+#: includes/admin/class-meta-box-bulk-rules.php:131
+msgid "Disallowed User Roles"
+msgstr "Uitgesloten klantrollen"
+
+#: includes/admin/class-meta-box-bulk-rules.php:144
+msgid "These User Roles will be specifically excluded from this pricing rule."
+msgstr "Deze klantrollen kunnen geen gebruik maken van deze prijsregel."
+
+#: includes/admin/class-meta-box-bulk-rules.php:151
+msgid "Display on product page"
+msgstr "Weergeven op de productpagina"
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:44
+msgid "Price Rules"
+msgstr "Prijsregels"
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:129
+msgid "Display settings"
+msgstr "Weergave instellingen"
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:137
+msgid "Show min-max price range on category page"
+msgstr "Laat min-max prijzen zien op categorie-pagina"
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:145
+msgid ""
+"If a discount is available for the product, display the min-max price range "
+"on the category pages."
+msgstr ""
+"Als een korting beschikbaar is voor het product, de min-max prijs tonen op "
+"de categorie-pagina."
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:146
+#: includes/admin/soft79-wc-pricing-rules-admin.php:161
+#: includes/admin/soft79-wc-pricing-rules-admin.php:176
+#: includes/admin/soft79-wc-pricing-rules-admin.php:191
+msgid "Example:"
+msgstr "Voorbeeld:"
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:152
+msgid "Show min-max price range on product detail page"
+msgstr "Laat min-max prijzen zien op product-pagina"
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:160
+msgid ""
+"If a discount is available for the product, display the min-max price range "
+"on the product detail pages."
+msgstr ""
+"Als een korting beschikbaar is voor het product, de min-max prijs tonen op "
+"de productdetail-pagina."
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:167
+msgid "Show from-to single item price on cart page"
+msgstr "Laat van-voor stuksprijs zien in de winkelwagen"
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:175
+msgid ""
+"If a discount has been applied to the product, display the from-to single "
+"product price on the cart page."
+msgstr ""
+"Als een korting is toegepast op het product, de van-voor stuksprijs tonen in "
+"de winkelwagen."
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:182
+msgid "Show from-to item subtotal on cart page"
+msgstr "Laat van-voor subtotaal van het product zien in de winkelwagen"
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:190
+msgid ""
+"If a discount has been applied to the product, display the from-to subtotal "
+"on the cart page."
+msgstr ""
+"Als een korting is toegepast op een product, de van-voor totaalprijs tonen "
+"in de winkelwagen."
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:197
+msgid "Hide discounts if not enough stock"
+msgstr "Kortingen verbergen als voorraad niet toereikend is"
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:205
+msgid ""
+"Prevent discounts to be displayed if the amount of items in stock is not "
+"sufficient for the discount to be applied."
+msgstr ""
+"Voorkom dat kortingen worden getoond als niet genoeg producten op voorraad "
+"zijn om de korting toe te kunnen passen."
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:213
+msgid "Rule settings"
+msgstr "Prijsregel instellingen"
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:220
+msgid "Rule selection"
+msgstr "Prijsregelselectie"
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:228
+msgid "Apply first applicable rule"
+msgstr "Eerste toepasbare prijsregel"
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:229
+msgid "Apply the rule that offers highest discount"
+msgstr "Prijsregel met hoogste korting"
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:233
+msgid ""
+"Decide what rule to apply if multiple rules can be applied to an item in the "
+"cart."
+msgstr ""
+"Bepaalt welke regel toegepast wordt wanneer meerdere regels geldig zijn voor "
+"een product in de winkelwagen."
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:285
+msgid "Pricing Rules Settings"
+msgstr "Prijsregels instellingen"
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:293
+msgid "Support"
+msgstr "Ondersteuning"
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:294
+msgid "We are currently working on adding new functionality to this plugin."
+msgstr "We werken momenteel aan nieuwe functionaliteit voor deze plugin."
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:297
+#, php-format
+msgid ""
+"Please check out %s for feature requests, support or for the latest news."
+msgstr "Kijk op %s voor ondersteuning of het laatste nieuws."
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:347
+msgid "Rule set"
+msgstr "Regelset"
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:482
+msgid "Pricing Rules"
+msgstr "Prijsregels"
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:485
+msgid "From"
+msgstr "Van"
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:486
+msgid "Minimal amount of products for this rule."
+msgstr "Minimaal aantal producten voor deze regel."
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:489
+msgid "To"
+msgstr "T/m"
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:489
+msgid "(Optional)"
+msgstr "(Optioneel)"
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:490
+msgid ""
+"Maximum amount of products for this rule. If the From and To price are the "
+"same value, this will be the price if you buy by the 'pack'."
+msgstr ""
+"Maximaal aantal producten voor deze prijsregel. Als de Van en T/m prijs "
+"gelijk zijn, is dit de stuksprijs in iedere volledige 'set' van dit aantal "
+"producten."
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:494
+#: includes/soft79-bulk-rule.php:312
+msgid "Price"
+msgstr "Prijs"
+
+#: includes/admin/soft79-wc-pricing-rules-admin.php:495
+msgid ""
+"Enter a price or percentage (%). If a negative value is supplied, this value "
+"is discounted from the original price. Examples: 50%, -10%, -0.10 4.99"
+msgstr ""
+"Geef een prijs of percentage (%) op. Als een negatieve waarde wordt "
+"opgegeven, wordt dit bedrag van het oorspronkelijke bedrag afgetrokken. "
+"Voorbeelden: 50%, -10%, -0.10 4.99"
+
+#: includes/soft79-bulk-rule.php:312
+msgid "Qty"
+msgstr "Aantal"
+
+#: includes/soft79-bulk-rule.php:337
+#, php-format
+msgid "%1$s (%2$s each)"
+msgstr "%1$s (%2$s per stuk)"
+
+#: includes/soft79-rule-controller-pro.php:17
+msgctxt "post type general name"
+msgid "Pricing rules"
+msgstr "Prijsregels"
+
+#: includes/soft79-rule-controller-pro.php:18
+msgctxt "post type singular name"
+msgid "Pricing rule"
+msgstr "Prijsregel"
+
+#: includes/soft79-rule-controller-pro.php:19
+msgctxt "admin menu"
+msgid "Pricing rules"
+msgstr "Prijsregels"
+
+#: includes/soft79-rule-controller-pro.php:20
+msgctxt "add new on admin bar"
+msgid "Pricing rule"
+msgstr "Prijsregel"
+
+#: includes/soft79-rule-controller-pro.php:21
+msgctxt "pricing rule"
+msgid "Add New"
+msgstr "Nieuwe toevoegen"
+
+#: includes/soft79-rule-controller-pro.php:22
+msgid "Add New Pricing rule"
+msgstr "Prijsregel toevoegen"
+
+#: includes/soft79-rule-controller-pro.php:23
+msgid "New Pricing rule"
+msgstr "Nieuwe Prijsregel"
+
+#: includes/soft79-rule-controller-pro.php:24
+msgid "Edit Pricing rule"
+msgstr "Wijzig Prijsregel"
+
+#: includes/soft79-rule-controller-pro.php:25
+msgid "View Pricing rule"
+msgstr "Bekijk Prijsregel"
+
+#: includes/soft79-rule-controller-pro.php:26
+msgid "All Pricing rules"
+msgstr "Alle Prijsregels"
+
+#: includes/soft79-rule-controller-pro.php:27
+msgid "Search Pricing rules"
+msgstr "Zoek Prijsregels"
+
+#: includes/soft79-rule-controller-pro.php:28
+msgid "No Pricing rules found."
+msgstr "Geen Prijsregels gevonden."
+
+#: includes/soft79-rule-controller-pro.php:29
+msgid "No Pricing rules found in Trash."
+msgstr "Geen Prijsregels gevonden in de prullenbak."
+
+#: soft79-wc-pricing-rules-pro.php:194 soft79-wc-pricing-rules-pro.php:227
+#, php-format
+msgctxt "Price range: from-to"
+msgid "%1$s&ndash;%2$s"
+msgstr "%1$s&ndash;%2$s"
+
+#: soft79-wc-pricing-rules-pro.php:309
+msgid ""
+"Multiple instances of the <i>SOFT79 Pricing Rules for Woocommerce</i>-plugin "
+"are activated. Please go to the Plugins-page and disable as required."
+msgstr ""
+"Er zijn meerdere instanties van de <i>SOFT79 Pricing Rules for Woocommerce</"
+"i>-plugin actief. Ga naar de Plugins-pagina en deactiveer een instantie."
+
+#~ msgid "Description"
+#~ msgstr "Omschrijving"
+
+#~ msgid ""
+#~ "This description can be displayed on the product page to inform the "
+#~ "customer of applicable price rules."
+#~ msgstr ""
+#~ "Deze omschrijving kan op de productpagina worden getoond om de klant te "
+#~ "informeren over geldende kortingen of prijsregels."
+
+#~ msgid "%$1s (%$2s each)"
+#~ msgstr "%$1s (%$2s per stuk)"
+
+#~ msgid "Pricing rules"
+#~ msgstr "Prijsregels"
+
+#~ msgid "Pricing rule"
+#~ msgstr "Prijsregel"
+
+#~ msgid "Add New"
+#~ msgstr "Toevoegen"
+
+#~ msgid "%1$s&ndash;%2$s"
+#~ msgstr "%1$s&ndash;%2$s"
+
+#~ msgctxt "book"
+#~ msgid "Add New"
+#~ msgstr "Nieuwe toevoegen"
+
+#~ msgid "Maximum amount of products for this rule."
+#~ msgstr "Maximaal aantal producten voor deze regel."
