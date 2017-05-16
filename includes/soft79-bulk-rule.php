@@ -262,11 +262,11 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
     
     public function render_product_page_html( $product ) {
         if ( ! $this->is_valid_for_user() ) {
-            echo "Not for this user";
+            //echo "Not for this user";
             return;
         }
         if ( ! $this->is_valid_for_product( $product ) ) {
-            echo "Not for this product";
+            //echo "Not for this product";
             return;
         }
         
