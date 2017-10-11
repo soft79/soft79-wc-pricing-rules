@@ -89,6 +89,7 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
     public function is_valid_for_product( $product ) {
         $product_id = SOFT79_Rule_Helpers::get_product_id( $product ); 
         $variation_id = SOFT79_Rule_Helpers::get_variation_id( $product ); // false if not a variation
+            error_log("VALID FOR $product_id:$variation_id ???");
 
         //Excluded products
         if ( in_array( $product_id, $this->exclude_product_ids ) ) {
@@ -108,6 +109,7 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
 
         //Excluded cats
         if ( array_intersect( $product_cats, $this->exclude_category_ids ) ) {
+            error_log("EXCLUDED CATS");
             return false;
         }        
 
@@ -128,6 +130,7 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
         if ( array_intersect( $product_cats, $this->category_ids ) ) {
             return true;
         }
+            error_log("END OF ALL");
         
         return false;
     }    
@@ -266,7 +269,6 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
             return;
         }
         if ( ! $this->is_valid_for_product( $product ) ) {
-            //echo "Not for this product";
             return;
         }
         

@@ -66,7 +66,17 @@ class SOFT79_Rule_Helpers {
         $product->$prop = $value;
     }    
 
+    /**
+     * Returns the id of the parent (variable product) if $product is a variation
+     * 
+     * @param WC_Product $product 
+     * @return int Product id
+     */
     public static function get_product_id( $product ) {
+        if ( self::is_variation($product) ) {
+            return self::get_variable_product_id( $product );
+        }
+
         //Since WC 3.0
         if ( is_callable( array( $product, 'get_id' ) ) ) {
             return $product->get_id();

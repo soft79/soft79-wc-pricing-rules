@@ -275,7 +275,7 @@ class SOFT79_Meta_Box_Bulk_Rules {
      * @param string $selected_keys_and_values 
      * @param string $placeholder 
      */
-    private function render_admin_select2_v4_product_selector( $dom_id, $field_name, $selected_keys_and_values, $placeholder ) {
+    private static function render_admin_select2_v4_product_selector( $dom_id, $field_name, $selected_keys_and_values, $placeholder ) {
         // $selected_keys_and_values must be an array of [ id => name ]
 
         $json_encoded = esc_attr( json_encode( $selected_keys_and_values ) );
