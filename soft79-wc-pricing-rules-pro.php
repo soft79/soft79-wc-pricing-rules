@@ -107,8 +107,8 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
             add_action( 'wp_enqueue_scripts', array( $this, 'action_enqueue_scripts' ) );
             
             //CALCULATION: Recalculate price of products in cart
-            add_action('woocommerce_before_calculate_totals', array( $this, 'action_woocommerce_before_calculate_totals'), 10, 0);
-            add_action('woocommerce_before_mini_cart', array( $this, 'action_woocommerce_before_calculate_totals'), 10, 0);
+            add_action('woocommerce_cart_loaded_from_session', array( $this, 'action_inject_prices'), 0, 0);
+            add_action('woocommerce_before_calculate_totals', array( $this, 'action_inject_prices'), 10, 0);
 
             //DISPLAY: Show table on template
             add_action('woocommerce_single_product_summary',  array( $this, 'action_woocommerce_single_product_summary'), 11 ); //11 is direct na prijs, zie wc-template-hooks.php
@@ -157,7 +157,7 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
         }
         
         //We cheat by setting the product price to bulk price 
-        function action_woocommerce_before_calculate_totals () {
+        function action_inject_prices() {
             $this->controller->execute();
         }
 
