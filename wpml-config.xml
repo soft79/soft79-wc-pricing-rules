@@ -1,0 +1,11 @@
+<wpml-config>
+  <custom-types>
+    <custom-type translate="1">j79_wc_price_rule</custom-type>
+  </custom-types>
+  <custom-fields>
+    <custom-field action="copy">_j79_product_ids</custom-field>
+    <custom-field action="copy">_j79_exclude_product_ids</custom-field>
+    <custom-field action="copy">_j79_product_categories</custom-field>
+    <custom-field action="copy">_j79_exclude_product_categories</custom-field>
+  </custom-fields>
+</wpml-config>

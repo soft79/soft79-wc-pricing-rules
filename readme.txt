@@ -69,6 +69,10 @@ function soft79_wcpr_min_max_price_html( $new_price_html, $original_price_html, 
 
 == Changelog ==
 
+= 1.1.4 =
+* FIX: Inject prices to cart items as soon as possible (fixes issue with coupon minimum spend).
+* FIX: WPML Compatibility
+
 = 1.1.3 =
 * FIX: Discount on variations in WC3.0+
 * FIX: PHP Deprecation message in class-meta-box-bulk-rules.php

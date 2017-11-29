@@ -61,9 +61,11 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
         $display_on_prod_page = get_post_meta( $this->post->ID, '_j79_display_on_prod_page', true );        
         if ( $display_on_prod_page !== '' ) {
             $this->display_on_prod_page = $display_on_prod_page;
-        }        
+        } 
+
+        do_action( 'soft79_wcpr_bulk_rule_loaded', $this );
     }
-    
+
     public function is_valid_for_user( $user = null ) {
         if ( sizeof( $this->user_roles ) > 0 || sizeof( $this->exclude_user_roles ) > 0 ) {
             

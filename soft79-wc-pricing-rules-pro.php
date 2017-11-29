@@ -3,14 +3,12 @@
  * Plugin Name: SOFT79 Pricing Rules for Woocommerce PRO
  * Plugin URI: http://www.soft79.nl
  * Description: Pricing rules for WooCommerce
- * Version: 1.1.3
+ * Version: 1.1.4
  * Author: Soft79
  * License: GPL2
  */
 
  
-//MIN WooCommerce version: 2.1.0
-
 defined('ABSPATH') or die();
 
 //Load text domain
@@ -36,12 +34,12 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
     //@include_once('includes/soft79-wc-pricing-rules-updater.php');
     
     final class SOFT79_WC_Pricing_Rules_Plugin {
-        public $version = '1.1.3';
+        public $version = '1.1.4';
 
         public $admin = null;
         
         public $controller = null;
-        
+
         public $options = array(
         //display
             'show_min_max_price' => true,
@@ -64,6 +62,7 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
             //error_log("NEW INSTANCE");
             $this->read_options();
             add_action('init', array( $this, 'controller_init' ));
+            add_action('wpml_loaded', array( $this, 'action_wpml_loaded' ) );
             if(is_admin()){
                 $this->admin = new SOFT79_Bulk_Pricing_Admin();
             }
@@ -102,7 +101,7 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
             } else {
                 $this->controller = new SOFT79_Rule_Controller( $this->options );
             }
-            
+
             //Frontend hooks
             add_action( 'wp_enqueue_scripts', array( $this, 'action_enqueue_scripts' ) );
             
@@ -129,7 +128,6 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
             if ( $this->options['show_cart_subtotal_as_from_to'] ) {
                 add_filter( 'woocommerce_cart_item_subtotal', array( $this, 'filter_item_subtotal' ), 10, 2 );
             }
-            
         }
 
         public function get_version() {
@@ -151,6 +149,16 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
         public function plugin_path() {
             return untrailingslashit( trailingslashit( dirname( __FILE__ ) ) );
         } 
+
+        /**
+         * WPML Compatibility
+         * @since 1.1.4
+         */
+        public function action_wpml_loaded() {
+            include_once( 'includes/soft79-wcpr-wpml.php');
+            $wpml = new SOFT79_WCPR_WPML();
+            $wpml->init();
+        }
 
         public function action_enqueue_scripts() {
             wp_enqueue_style( 'soft79_bulk_styles', SOFT79_WC_Pricing_Rules_Plugin()->plugin_url() . '/assets/css/frontend.css', array(), $this->get_version() );
@@ -338,11 +346,3 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
         echo '<div class="error"><p>' . $msg . '</p></div>';
     }
 }
-
-// function dd( $data) {
-            // echo "<pre>";
-        // print_r($data);
-            // echo "</pre>";
-        // die();
-
-// }
