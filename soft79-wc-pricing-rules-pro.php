@@ -3,7 +3,7 @@
  * Plugin Name: SOFT79 Pricing Rules for Woocommerce PRO
  * Plugin URI: http://www.soft79.nl
  * Description: Pricing rules for WooCommerce
- * Version: 1.1.2
+ * Version: 1.2.0-dev
  * Author: Soft79
  * License: GPL2
  */
@@ -36,7 +36,7 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
     //@include_once('includes/soft79-wc-pricing-rules-updater.php');
     
     final class SOFT79_WC_Pricing_Rules_Plugin {
-        public $version = '1.1.0';
+        public $version = '1.2.0-dev.10';
 
         public $admin = null;
         
@@ -153,7 +153,7 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
         } 
 
         public function action_enqueue_scripts() {
-            wp_enqueue_style( 'soft79_bulk_styles', SOFT79_WC_Pricing_Rules_Plugin()->plugin_url() . '/assets/css/frontend.css', array(), $this->get_version() );
+            wp_enqueue_style( 'soft79_bulk_styles', SOFT79_WCPR()->plugin_url() . '/assets/css/frontend.css', array(), $this->get_version() );
         }
         
         //We cheat by setting the product price to bulk price 
@@ -274,7 +274,7 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
 
             //Auto update when switching variation
             if ( $product->is_type( 'variable' ) ) {
-                wp_enqueue_script( 'soft79-single-product-summary', plugins_url( 'assets/js/frontend/single-product-summary.js', __FILE__ ), array( 'jquery' ), '1.0.3.0', true );
+                wp_enqueue_script( 'soft79-single-product-summary', plugins_url( 'assets/js/frontend/single-product-summary.js', __FILE__ ), array( 'jquery' ), $this->get_version(), true );
             }
         }
 
@@ -328,9 +328,13 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
     } //Main class
     
     function SOFT79_WC_Pricing_Rules_Plugin() {
+        _doing_it_wrong( 'SOFT79_WC_Pricing_Rules_Plugin', 'The function SOFT79_WC_Pricing_Rules_Plugin() is deprecated, use SOFT79_WCPR() instead.', '1.2.0' );
         return SOFT79_WC_Pricing_Rules_Plugin::instance();
     }
-    SOFT79_WC_Pricing_Rules_Plugin();
+    function SOFT79_WCPR() {
+        return SOFT79_WC_Pricing_Rules_Plugin::instance();
+    }
+    SOFT79_WCPR();
 } elseif ( ! function_exists( 'soft79_wc_pricing_admin_notice' ) ) {
     add_action( 'admin_notices', 'soft79_wc_pricing_admin_notice' );
     function soft79_wc_pricing_admin_notice() {
