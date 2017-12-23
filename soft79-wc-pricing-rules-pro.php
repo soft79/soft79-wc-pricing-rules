@@ -8,7 +8,7 @@
  * License: GPL2
  */
 
- 
+
 //MIN WooCommerce version: 2.1.0
 
 defined('ABSPATH') or die();
@@ -22,7 +22,7 @@ if ( ! function_exists( 'soft79_wc_pricing_rules_load_plugin_textdomain' ) ) {
 }
 
 //The main class
-if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {  
+if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
 
     require_once('includes/soft79-rule-helpers.php');
     require_once('includes/soft79-rule-controller.php');
@@ -31,26 +31,26 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
     require_once('includes/soft79-bulk-rule.php');
     require_once('includes/admin/soft79-wc-pricing-rules-admin.php');
     require_once('includes/admin/class-meta-box-bulk-rules.php');
-    
+
     @include_once('includes/soft79-rule-controller-pro.php');
     //@include_once('includes/soft79-wc-pricing-rules-updater.php');
-    
+
     final class SOFT79_WC_Pricing_Rules_Plugin {
-        public $version = '1.2.0-dev.10';
+        public $version = '1.2.0-dev.12';
 
         public $admin = null;
-        
+
         public $controller = null;
-        
+
         public $options = array(
         //display
             'show_min_max_price' => true,
             'show_min_max_price_singular' => false,
             'show_cart_itemprice_as_from_to' => true, //Display cart single item price as from_to if bulk discount applies
             'show_cart_subtotal_as_from_to' => false, //Display cart item subtotal as from_to if bulk discount applies
-            'pack_price_format' => 0, //0 is unit price, 1 = total price, 2 = both        
-            'hide_rules_not_in_stock' => true, //Don't load/display rules that can't be used because not enough product stock        
-            
+            'pack_price_format' => 0, //0 is unit price, 1 = total price, 2 = both
+            'hide_rules_not_in_stock' => true, //Don't load/display rules that can't be used because not enough product stock
+
         //rules
             'rule_choice' => 'best', //best or first
 
@@ -58,18 +58,18 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
         //misc
             'db_version' => 0 //future: usage for auto database update
         );
-        
+
         public function __construct() {
-            
+
             //error_log("NEW INSTANCE");
             $this->read_options();
             add_action('init', array( $this, 'controller_init' ));
             if(is_admin()){
                 $this->admin = new SOFT79_Bulk_Pricing_Admin();
             }
-            
+
         }
-        
+
         public function read_options() {
             //Start with default options, overwrite what is read from db
             $db_options = get_option( 'j79_price_rules_settings', array() );
@@ -78,9 +78,9 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
                     $this->options[$k] = $v;
                 }
             }
-            
+
         }
-        
+
         protected static $_instance = null;
         /**
          *  Get the single instance
@@ -90,8 +90,8 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
                 self::$_instance = new self();
             }
             return self::$_instance;
-        }    
-        
+        }
+
         public function controller_init() {
             if ( ! class_exists('WooCommerce') ) {
                 return;
@@ -102,17 +102,17 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
             } else {
                 $this->controller = new SOFT79_Rule_Controller( $this->options );
             }
-            
+
             //Frontend hooks
             add_action( 'wp_enqueue_scripts', array( $this, 'action_enqueue_scripts' ) );
-            
+
             //CALCULATION: Recalculate price of products in cart
             add_action('woocommerce_before_calculate_totals', array( $this, 'action_woocommerce_before_calculate_totals'), 10, 0);
             add_action('woocommerce_before_mini_cart', array( $this, 'action_woocommerce_before_calculate_totals'), 10, 0);
 
             //DISPLAY: Show table on template
             add_action('woocommerce_single_product_summary',  array( $this, 'action_woocommerce_single_product_summary'), 11 ); //11 is direct na prijs, zie wc-template-hooks.php
-            
+
             //DISPLAY: Show min ... max price of the product
             add_filter('woocommerce_get_price_html', array( $this, 'action_woocommerce_get_price_html' ), 10, 2);
 
@@ -124,39 +124,39 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
             if ( $this->options['show_cart_itemprice_as_from_to'] ) {
                 add_filter( 'woocommerce_cart_item_price', array( $this, 'filter_woocommerce_cart_item_price' ), 10, 2 );
             }
-            
-            //DISPLAY: Overwrite cart single item subtotal         
+
+            //DISPLAY: Overwrite cart single item subtotal
             if ( $this->options['show_cart_subtotal_as_from_to'] ) {
                 add_filter( 'woocommerce_cart_item_subtotal', array( $this, 'filter_item_subtotal' ), 10, 2 );
             }
-            
+
         }
 
         public function get_version() {
             return $this->version;
         }
-        
+
         /**
          * Get the plugin url.
          * @return string
          */
         public function plugin_url() {
             return untrailingslashit( plugins_url( '/', __FILE__ ) );
-        }    
-        
+        }
+
         /**
          * Get the plugin path.
          * @return string
-         */    
+         */
         public function plugin_path() {
             return untrailingslashit( trailingslashit( dirname( __FILE__ ) ) );
-        } 
+        }
 
         public function action_enqueue_scripts() {
             wp_enqueue_style( 'soft79_bulk_styles', SOFT79_WCPR()->plugin_url() . '/assets/css/frontend.css', array(), $this->get_version() );
         }
-        
-        //We cheat by setting the product price to bulk price 
+
+        //We cheat by setting the product price to bulk price
         function action_woocommerce_before_calculate_totals () {
             $this->controller->execute();
         }
@@ -179,7 +179,7 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
                 $prices = array();
                 foreach ( $this->controller->get_valid_rules_for( $product ) as $price_rule ) {
                     $prices = array_merge( $prices, $price_rule->get_price_range( $product ) );
-                }    
+                }
                 $original_price = $this->controller->get_original_price( $product );
                 if ( count( $prices ) == 0 ) {
                     $prices[] = $original_price;
@@ -197,9 +197,9 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
                         $new_price_html = sprintf( _x( '%1$s&ndash;%2$s', 'Price range: from-to', 'woocommerce' ), wc_price( SOFT79_Rule_Helpers::get_price_to_display( $product, $min_price ) ), wc_price( SOFT79_Rule_Helpers::get_price_to_display( $product, $max_price ) ) ) . $suffix;
                     }
                     return apply_filters( 'soft79_wcpr_min_max_price_html', $new_price_html, $original_price_html, $product, $min_price, $max_price, $is_singular );
-                }                
+                }
             }
-            
+
             //Sale price to show?
             $sale_price = $this->controller->get_sale_price( $product );
             if ( $sale_price !== false ) {
@@ -211,11 +211,11 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
             }
 
             return $new_price_html;
-        }        
-        
+        }
+
         public function filter_woocommerce_cart_item_price( $price, $values ) {
             $cart = WC()->cart;
-            
+
             $product = $values['data'];
             if ( $this->controller->is_pricing_rule_applied( $product ) ) {
                 $min_price = $this->controller->get_temp_data( $product, 'stack_min_price' );
@@ -224,26 +224,26 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
                 if ( $min_price !== null && $min_price != $max_price ) {
                     $price = sprintf( _x( '%1$s&ndash;%2$s', 'Price range: from-to', 'woocommerce' ), wc_price( SOFT79_Rule_Helpers::get_cart_taxed_price( $product, $min_price ) ), wc_price( SOFT79_Rule_Helpers::get_cart_taxed_price( $product, $max_price ) ) );
                 }
-                
-                $price = SOFT79_Rule_Helpers::format_sale_price( 
-                    SOFT79_Rule_Helpers::get_cart_taxed_price( $product, $this->controller->get_temp_data( $product, 'original_price') ), 
+
+                $price = SOFT79_Rule_Helpers::format_sale_price(
+                    SOFT79_Rule_Helpers::get_cart_taxed_price( $product, $this->controller->get_temp_data( $product, 'original_price') ),
                     $price
                 );
-            }            
+            }
 
             return $price;
         }
-        
+
         public function filter_item_subtotal( $cart_subtotal, $values ) {
             $product = $values['data'];
             if ( $this->controller->is_pricing_rule_applied( $product ) ) {
                 $qty = $values['quantity'];
-                
+
                 $from_price = SOFT79_Rule_Helpers::get_cart_taxed_price( $product, $qty * $this->controller->get_temp_data( $product, 'original_price') );
                 $to_price = SOFT79_Rule_Helpers::get_cart_taxed_price( $product, $qty * $product->get_price() );
-                
+
                 $cart_subtotal = SOFT79_Rule_Helpers::format_sale_price( wc_price( $from_price ), wc_price( $to_price ) );
-				
+
 				// Display "excl tax" or "incl tax"
 				$cart = WC()->cart;
 				if ( $cart->tax_display_cart == 'excl' ) {
@@ -255,13 +255,13 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
 						$cart_subtotal .= ' <small>' . WC()->countries->inc_tax_or_vat() . '</small>';
 					}
 				}
-				
+
             }
             return $cart_subtotal;
         }
-        
+
         /**
-         * Show discount information on single product page 
+         * Show discount information on single product page
          */
         function action_woocommerce_single_product_summary() {
             global $product;
@@ -296,7 +296,7 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
 
         /**
          * Get overwritable template filename
-         * @param string $template_name 
+         * @param string $template_name
          * @return string Template filename
          */
         public function get_template_filename( $template_name ) {
@@ -317,16 +317,16 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
 
         /**
          * Include a template file, either from this plugins directory or overwritten in the themes directory
-         * @param type $template_name 
+         * @param type $template_name
          * @return type
          */
         public function include_template( $template_name, $variables = array() ) {
             extract( $variables );
             include( $this->get_template_filename( $template_name ) );
-        }        
+        }
 
     } //Main class
-    
+
     function SOFT79_WC_Pricing_Rules_Plugin() {
         _doing_it_wrong( 'SOFT79_WC_Pricing_Rules_Plugin', 'The function SOFT79_WC_Pricing_Rules_Plugin() is deprecated, use SOFT79_WCPR() instead.', '1.2.0' );
         return SOFT79_WC_Pricing_Rules_Plugin::instance();

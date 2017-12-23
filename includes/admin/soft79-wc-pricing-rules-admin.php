@@ -491,9 +491,8 @@ final class SOFT79_Bulk_Pricing_Admin {
                     esc_attr_e( 'Price', 'woocommerce' ); 
                 ?>" class="input-text wc_input_price last" size="6" type="text" name="<?php echo $field_name; ?>[price][]" value="<?php
                     echo wc_format_localized_price( $price );
-                ?>" />
-                
-            </span>
+                ?>" />                
+            </span><a href="#" class="soft79_wcpr_delete_row">X</a>
             
         </p><?php
     }
