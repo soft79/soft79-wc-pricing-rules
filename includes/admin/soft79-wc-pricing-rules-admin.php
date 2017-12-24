@@ -29,7 +29,9 @@ final class SOFT79_Bulk_Pricing_Admin {
         add_action( 'woocommerce_save_product_variation', array( &$this, 'action_save_product_variation' ), 10, 2 );
 
         add_action( 'woocommerce_product_options_general_product_data', array( &$this, 'action_admin_show_price_rules' ) );
-        //TODO: Bulk prices for variations: add_action( 'woocommerce_product_after_variable_attributes', array( &$this, 'action_admin_show_variation_price_rules' ), 10, 3 );
+        add_action( 'woocommerce_variation_options_pricing', array( &$this, 'action_admin_show_variation_price_rules' ), 10, 3 );
+        //Javascript code for dynamic adding of rows
+        wp_enqueue_script( 'soft79_wcpr_admin', SOFT79_WCPR()->plugin_url() . '/assets/js/admin/admin.js'  , array(), SOFT79_WCPR()->get_version() );
         
         //Admin page
         add_action( 'admin_init', array( &$this, 'action_admin_init' ) );    
@@ -41,6 +43,8 @@ final class SOFT79_Bulk_Pricing_Admin {
         add_action( 'save_post', array( $this, 'save_meta_boxes' ), 1, 2 );
         //Use WC's scripts on the custom post page
         add_filter( 'woocommerce_screen_ids', array( $this, 'filter_woocommerce_screen_ids' ) );
+
+
     }
 
     public function action_admin_menu() {
@@ -67,8 +71,8 @@ final class SOFT79_Bulk_Pricing_Admin {
         $menu = $args['menu'];
         $id = $args['id'];
     
-        if ( isset( SOFT79_WC_Pricing_Rules_Plugin()->options[$id] ) ) {
-            $current = SOFT79_WC_Pricing_Rules_Plugin()->options[$id];
+        if ( isset( SOFT79_WCPR()->options[$id] ) ) {
+            $current = SOFT79_WCPR()->options[$id];
         } else {
             $current = isset( $args['default'] ) ? $args['default'] : '';
         }
@@ -92,8 +96,8 @@ final class SOFT79_Bulk_Pricing_Admin {
         $id = $args['id'];
     
     
-        if ( isset( SOFT79_WC_Pricing_Rules_Plugin()->options[$id] ) ) {
-            $current = SOFT79_WC_Pricing_Rules_Plugin()->options[$id];
+        if ( isset( SOFT79_WCPR()->options[$id] ) ) {
+            $current = SOFT79_WCPR()->options[$id];
         } else {
             $current = isset( $args['default'] ) ? $args['default'] : '';
         }
@@ -124,7 +128,7 @@ final class SOFT79_Bulk_Pricing_Admin {
             add_option( $option );
         }
         
-        $options = SOFT79_WC_Pricing_Rules_Plugin()->options;
+        $options = SOFT79_WCPR()->options;
         
         // Section.
         add_settings_section(
@@ -210,7 +214,7 @@ final class SOFT79_Bulk_Pricing_Admin {
         );    
 
         //Rules
-        if ( SOFT79_WC_Pricing_Rules_Plugin()->controller->is_pro() ) {
+        if ( SOFT79_WCPR()->controller->is_pro() ) {
             add_settings_section(
                 'rules',
                 __( 'Rule settings', 'soft79-wc-pricing-rules' ),
@@ -352,7 +356,7 @@ final class SOFT79_Bulk_Pricing_Admin {
     }
     
     public function action_admin_enqueue_scripts() {
-        wp_enqueue_style( 'soft79_bulk_admin_styles', SOFT79_WC_Pricing_Rules_Plugin()->plugin_url() . '/assets/css/admin.css', array(), "test6" );
+        wp_enqueue_style( 'soft79_bulk_admin_styles', SOFT79_WCPR()->plugin_url() . '/assets/css/admin.css', array(), "test6" );
     }
     
     /**
@@ -376,11 +380,20 @@ final class SOFT79_Bulk_Pricing_Admin {
      */
     public function get_bulk_rules_from_form( $form_bulk_rules ) {
         $bulk_rules = array();
+
+        //$form_bulk_rules is shaped like this: 
+        // [
+        //   [qty_from][]
+        //   [qty_to][]
+        //   [price][]
+        // ]
+
         //Placing of the values in array (safe)
-        foreach( $form_bulk_rules as $form_rule ) {
-            $qty_from = intval($form_rule['qty_from']);
-            $qty_to = intval($form_rule['qty_to']);
-            $price = $form_rule['price'];
+        foreach( array_keys( $form_bulk_rules['price'] ) as $idx ) {
+
+            $qty_from = intval( $form_bulk_rules['qty_from'][$idx] );
+            $qty_to = intval( $form_bulk_rules['qty_to'][$idx] );
+            $price = $form_bulk_rules['price'][$idx];
             
             //Parse percentage or price
             if ( strstr( $price, '%' ) ) {
@@ -445,7 +458,7 @@ final class SOFT79_Bulk_Pricing_Admin {
         
     }
     
-    private function render_admin_single_bulk_row( $idx, $rule = null, $variation_loop = null ) {
+    private function render_admin_single_bulk_row( $rule = null, $variation_loop = null ) {
 
         //If variation_loop is not null, it is used for a variable product, so we add variable_ prefix and an indexer!
         if ( $variation_loop === null ) {
@@ -463,24 +476,23 @@ final class SOFT79_Bulk_Pricing_Admin {
         
                 <input placeholder="<?php 
                     esc_attr_e( 'Qty', 'woocommerce' ); 
-                ?>" class="input-text wc_input_decimal" size="6" type="text" name="<?php echo $field_name; ?>[<?php echo $idx; ?>][qty_from]" value="<?php
+                ?>" class="input-text wc_input_decimal" size="6" type="text" name="<?php echo $field_name; ?>[qty_from][]" value="<?php
                     echo $qty_from; 
                 ?>" />
                 
                 <input placeholder="<?php 
                     esc_attr_e( 'Qty', 'woocommerce' ); 
-                ?>" class="input-text wc_input_decimal" size="6" type="text" name="<?php echo $field_name; ?>[<?php echo $idx; ?>][qty_to]" value="<?php
+                ?>" class="input-text wc_input_decimal" size="6" type="text" name="<?php echo $field_name; ?>[qty_to][]" value="<?php
                     echo $qty_to; 
                 ?>" />
                 
 
                 <input placeholder="<?php 
                     esc_attr_e( 'Price', 'woocommerce' ); 
-                ?>" class="input-text wc_input_price last" size="6" type="text" name="<?php echo $field_name; ?>[<?php echo $idx; ?>][price]" value="<?php
+                ?>" class="input-text wc_input_price last" size="6" type="text" name="<?php echo $field_name; ?>[price][]" value="<?php
                     echo wc_format_localized_price( $price );
-                ?>" />
-                
-            </span>
+                ?>" />                
+            </span><a href="#" class="soft79_wcpr_delete_row">X</a>
             
         </p><?php
     }
@@ -488,42 +500,49 @@ final class SOFT79_Bulk_Pricing_Admin {
     function render_admin_bulk_rules( $bulk_rules, $variation_loop = null  ) {
 
         $var_idx = $variation_loop === null ? '' : '[' . absint( $variation_loop ) . ']';
-        
-        echo "<input type='hidden' name='_j79_rule_type" . $var_idx . "' value='bulk'>";
-        echo "<div class='soft79_bulk_rules'>";
-        echo "<p class='form-field'><label>" . __( 'Pricing Rules', 'soft79-wc-pricing-rules' ) . "</label>";
-        echo "<span class='wrap'>";
-        
-        echo "<span>" . __( 'From', 'soft79-wc-pricing-rules' );
-        self::html_help_icon( __("Minimal amount of products for this rule.", 'soft79-wc-pricing-rules' ) );        
-        echo "</span>";
-        
-        echo "<span>" . __( 'To', 'soft79-wc-pricing-rules' ) . " " . __( '(Optional)', 'soft79-wc-pricing-rules' );
-        self::html_help_icon( __("Maximum amount of products for this rule. If the From and To price are the same value, this will be the price if you buy by the 'pack'.", 'soft79-wc-pricing-rules' ) );
-        echo "</span>";
-        
-        
-        echo "<span class='last'>" . __( 'Price', 'woocommerce' ) . " (" . get_woocommerce_currency_symbol() . ", %)";;
-        self::html_help_icon( __("Enter a price or percentage (%). If a negative value is supplied, this value is discounted from the original price. Examples: 50%, -10%, -0.10 4.99", 'soft79-wc-pricing-rules' ) );        
-        echo "</span>";
-        
-        echo "</span></p>";
 
-        if ($bulk_rules !== null) {
-            //The filled fields
-            $idx = 0;
-            foreach ( $bulk_rules as $r ) {    
-                $this->render_admin_single_bulk_row( $idx, $r, $variation_loop );
-                $idx++;
+?>
+        <input type='hidden' name='_j79_rule_type<?php echo $var_idx; ?>' value='bulk'>
+        <div class='soft79_bulk_rules'>
+            <p class='form-field'>
+                <label><?php _e( 'Pricing Rules', 'soft79-wc-pricing-rules' ); ?></label>
+                <span class='wrap'>
+                <?php
+                    echo "<span>" . __( 'From', 'soft79-wc-pricing-rules' );
+                    self::html_help_icon( __("Minimal amount of products for this rule.", 'soft79-wc-pricing-rules' ) );        
+                    echo "</span>";        
+                    echo "<span>" . __( 'To', 'soft79-wc-pricing-rules' ) . " " . __( '(Optional)', 'soft79-wc-pricing-rules' );
+                    self::html_help_icon( __("Maximum amount of products for this rule. If the From and To price are the same value, this will be the price if you buy by the 'pack'.", 'soft79-wc-pricing-rules' ) );
+                    echo "</span>";        
+                    echo "<span class='last'>" . __( 'Price', 'woocommerce' ) . " (" . get_woocommerce_currency_symbol() . ", %)";;
+                    self::html_help_icon( __("Enter a price or percentage (%). If a negative value is supplied, this value is discounted from the original price. Examples: 50%, -10%, -0.10 4.99", 'soft79-wc-pricing-rules' ) );        
+                    echo "</span>";        
+                ?>
+                </span>
+            </p>
+<?php
+            //The filled-in fields
+            if ($bulk_rules !== null) {
+                foreach ( $bulk_rules as $row ) {    
+                    $this->render_admin_single_bulk_row( $row, $variation_loop );
+                }
             }
-        }
-        
-        //Extra empty fields
-        $offset = $idx;
-        for ( $idx = 0; $idx < 5; $idx++ ) {
-            $this->render_admin_single_bulk_row( $idx + $offset, null, $variation_loop );
-        }            
-        echo "</div>";
+
+            //At least 3 rows; at least 1 empty row
+            $counter = count( $bulk_rules );
+            do {
+                $this->render_admin_single_bulk_row( null, $variation_loop );
+                $counter++;
+            } while ( $counter < 3 );
+?>
+            <p class="form-field soft79_wcpr_add_rule">
+                <span class="wrap">
+                    <a href="#"><?php _e( 'Add row', 'soft79-wc-pricing-rules' ); ?></a>
+                </span>
+            </p>
+            <div class='soft79_wcpr_new_row' style='display:none;'><?php $this->render_admin_single_bulk_row( null, $variation_loop ); ?></div>
+        </div>
+<?php
         
     }
 

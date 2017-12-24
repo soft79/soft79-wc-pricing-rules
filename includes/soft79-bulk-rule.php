@@ -167,7 +167,7 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
         $bulk_rules = $this->bulk_rules;
         
         $quantity_left = $quantity;
-        $original_price = SOFT79_WC_Pricing_Rules_Plugin()->controller->get_original_price( $product );        
+        $original_price = SOFT79_WCPR()->controller->get_original_price( $product );        
         $rule_stack = new SOFT79_Price_Acumulator();
 
         //Iterate backwards; first to find should be the best value for the customer
@@ -238,7 +238,7 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
             return $prices;
         }
         
-        $original_price = SOFT79_WC_Pricing_Rules_Plugin()->controller->get_original_price( $product );
+        $original_price = SOFT79_WCPR()->controller->get_original_price( $product );
         foreach( $bulk_rules as $rule ) {
             //error_log(print_r($rule, true));
             if ( $rule['qty_from'] <= 1 ) {
@@ -284,7 +284,7 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
         $table_display_data = array();
         
         //Add 1+ line if from...to price is shown
-        if ( SOFT79_WC_Pricing_Rules_Plugin()->options['show_min_max_price_singular'] ) {
+        if ( SOFT79_WCPR()->options['show_min_max_price_singular'] ) {
             //Not if first rule already has a qty of 1
             if ( isset( $this->bulk_rules[0]['qty_from'] ) && $this->bulk_rules[0]['qty_from'] > 1 ) {
                 $table_display_data[] = $this->get_rule_display_data( array( 'qty_from' => 1, 'qty_to' => 0, 'price'=>'100%' ), $product );
@@ -312,7 +312,7 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
             'rule' => $this,
             'product' => $product
         );
-        SOFT79_WC_Pricing_Rules_Plugin()->include_template( 'single-product/bulk-rule.php', $variables );
+        SOFT79_WCPR()->include_template( 'single-product/bulk-rule.php', $variables );
 
 
     }
@@ -320,16 +320,16 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
     protected function get_rule_display_data( $rule, $product ) {
 
             $price = SOFT79_Rule_Helpers::get_relative_price(
-                SOFT79_WC_Pricing_Rules_Plugin()->controller->get_original_price( $product ), 
+                SOFT79_WCPR()->controller->get_original_price( $product ), 
                 $rule['price']
             );
             $qty_rule_html = $this->get_bulk_quantity_string($rule);
 
             //Pack price format
-            if ( $rule['qty_from'] == $rule['qty_to'] && SOFT79_WC_Pricing_Rules_Plugin()->options['pack_price_format'] > 0 ) {
+            if ( $rule['qty_from'] == $rule['qty_to'] && SOFT79_WCPR()->options['pack_price_format'] > 0 ) {
                 $total_price =  $rule['qty_from'] * $price;
                 $price_html = wc_price( SOFT79_Rule_Helpers::get_price_to_display( $product, $total_price ) );
-                if ( SOFT79_WC_Pricing_Rules_Plugin()->options['pack_price_format'] == 2 ) {
+                if ( SOFT79_WCPR()->options['pack_price_format'] == 2 ) {
                     $suffix = $product->get_price_suffix( $total_price );
                     $price_html = sprintf( __('%1$s (%2$s each)', "soft79-wc-pricing-rules"), $price_html, wc_price( SOFT79_Rule_Helpers::get_price_to_display( $product, $price ) )) . $suffix;
                 }
@@ -344,7 +344,7 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
     
     public function get_rules_valid_for_stock( $product ) {
         //Don't hide those rules
-        if ( is_admin() || ! SOFT79_WC_Pricing_Rules_Plugin()->options['hide_rules_not_in_stock'] ) {
+        if ( is_admin() || ! SOFT79_WCPR()->options['hide_rules_not_in_stock'] ) {
             return $this->bulk_rules;
         }
         

@@ -16,7 +16,7 @@ class SOFT79_Meta_Box_Bulk_Rules {
 
         echo '<div id="j79_pricing_rules_meta" class="panel woocommerce_options_panel">';
 
-        SOFT79_WC_Pricing_Rules_Plugin()->admin->render_admin_bulk_rules( $rule->bulk_rules );
+        SOFT79_WCPR()->admin->render_admin_bulk_rules( $rule->bulk_rules );
             
         // Quantity scope
         woocommerce_wp_select( array( 
@@ -316,7 +316,7 @@ class SOFT79_Meta_Box_Bulk_Rules {
      * Save meta box data
      */
     public static function save( $post_id, $post ) {
-        SOFT79_WC_Pricing_Rules_Plugin()->admin->save_admin_bulk_rules( $post_id, $post );
+        SOFT79_WCPR()->admin->save_admin_bulk_rules( $post_id, $post );
         
         //Extended fields
         $user_roles            = isset( $_POST['_j79_user_roles'] ) ? $_POST['_j79_user_roles'] : '';
