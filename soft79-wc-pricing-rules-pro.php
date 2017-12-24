@@ -4,11 +4,11 @@
  * Plugin URI: http://www.soft79.nl
  * Description: Pricing rules for WooCommerce
  * Version: 1.2.0
+ * WC requires at least: 2.6.0
+ * WC tested up to: 3.3.0
  * Author: Soft79
  * License: GPL2
  */
-
-//MIN WooCommerce version: 2.1.0
 
 defined('ABSPATH') or die();
 
