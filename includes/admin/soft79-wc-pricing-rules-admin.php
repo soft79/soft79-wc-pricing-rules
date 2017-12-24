@@ -471,31 +471,28 @@ final class SOFT79_Bulk_Pricing_Admin {
         $qty_to = esc_attr( isset( $rule['qty_to'] ) && $rule['qty_to'] ? $rule['qty_to'] : '' );         
         $price = esc_attr( isset( $rule['price'] ) ? $rule['price'] : '' ); 
 
-        ?><p class="form-field soft79_bulk_row">
-            <span class="wrap">
-        
+?>
+        <p class="form-field soft79_bulk_row">
+            <span class="wrap">        
                 <input placeholder="<?php 
                     esc_attr_e( 'Qty', 'woocommerce' ); 
                 ?>" class="input-text wc_input_decimal" size="6" type="text" name="<?php echo $field_name; ?>[qty_from][]" value="<?php
                     echo $qty_from; 
-                ?>" />
-                
+                ?>" />                
                 <input placeholder="<?php 
                     esc_attr_e( 'Qty', 'woocommerce' ); 
                 ?>" class="input-text wc_input_decimal" size="6" type="text" name="<?php echo $field_name; ?>[qty_to][]" value="<?php
                     echo $qty_to; 
                 ?>" />
-                
-
                 <input placeholder="<?php 
                     esc_attr_e( 'Price', 'woocommerce' ); 
                 ?>" class="input-text wc_input_price last" size="6" type="text" name="<?php echo $field_name; ?>[price][]" value="<?php
                     echo wc_format_localized_price( $price );
                 ?>" />
                 <a href="#" class="soft79_wcpr_delete_row">X</a>
-            </span>
-            
-        </p><?php
+            </span>            
+        </p>
+<?php
     }
     
     function render_admin_bulk_rules( $bulk_rules, $variation_loop = null  ) {
@@ -510,14 +507,14 @@ final class SOFT79_Bulk_Pricing_Admin {
                 <span class='wrap'>
                 <?php
                     echo "<span>" . __( 'From', 'soft79-wc-pricing-rules' );
-                    self::html_help_icon( __("Minimal amount of products for this rule.", 'soft79-wc-pricing-rules' ) );        
-                    echo "</span>";        
+                    self::html_help_icon( __("Minimal amount of products for this rule.", 'soft79-wc-pricing-rules' ) );
+                    echo "</span>";
                     echo "<span>" . __( 'To', 'soft79-wc-pricing-rules' ) . " " . __( '(Optional)', 'soft79-wc-pricing-rules' );
                     self::html_help_icon( __("Maximum amount of products for this rule. If the From and To price are the same value, this will be the price if you buy by the 'pack'.", 'soft79-wc-pricing-rules' ) );
-                    echo "</span>";        
-                    echo "<span class='last'>" . __( 'Price', 'woocommerce' ) . " (" . get_woocommerce_currency_symbol() . ", %)";;
-                    self::html_help_icon( __("Enter a price or percentage (%). If a negative value is supplied, this value is discounted from the original price. Examples: 50%, -10%, -0.10 4.99", 'soft79-wc-pricing-rules' ) );        
-                    echo "</span>";        
+                    echo "</span>";
+                    echo "<span class='last'>" . __( 'Price', 'woocommerce' ) . " (" . get_woocommerce_currency_symbol() . ", %)";
+                    self::html_help_icon( __("Enter a price or percentage (%). If a negative value is supplied, this value is discounted from the original price. Examples: 50%, -10%, -0.10 4.99", 'soft79-wc-pricing-rules' ) );
+                    echo "</span>";
                 ?>
                 </span>
             </p>
