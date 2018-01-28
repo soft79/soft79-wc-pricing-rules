@@ -69,6 +69,10 @@ function soft79_wcpr_min_max_price_html( $new_price_html, $original_price_html, 
 
 == Changelog ==
 
+= 1.3.0 =
+* INTERNAL: Filter 'soft79_wcpr_accounted_quantity' that allows overriding the amount of items that are taken in account for a discount.
+* Removed 'sale price' logic for rules with a quantity of 1
+
 = 1.2.0 =
 * FEATURE: Bulk pricing rules for product variations
 

@@ -3,7 +3,7 @@
  * Plugin Name: SOFT79 Pricing Rules for Woocommerce PRO
  * Plugin URI: http://www.soft79.nl
  * Description: Pricing rules for WooCommerce
- * Version: 1.2.0
+ * Version: 1.3.0-dev.2
  * WC requires at least: 2.6.0
  * WC tested up to: 3.3.0
  * Author: Soft79
@@ -35,7 +35,7 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
     //@include_once('includes/soft79-wc-pricing-rules-updater.php');
 
     final class SOFT79_WC_Pricing_Rules_Plugin {
-        public $version = '1.2.0';
+        public $version = '1.3.0-dev.2';
 
         public $admin = null;
 
@@ -206,16 +206,6 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
                     }
                     return apply_filters( 'soft79_wcpr_min_max_price_html', $new_price_html, $original_price_html, $product, $min_price, $max_price, $is_singular );
                 }
-            }
-
-            //Sale price to show?
-            $sale_price = $this->controller->get_sale_price( $product );
-            if ( $sale_price !== false ) {
-                $original_price = $this->controller->get_original_price( $product );
-                $new_price_html = SOFT79_Rule_Helpers::format_sale_price(
-                    SOFT79_Rule_Helpers::get_price_to_display( $product, $original_price ),
-                    SOFT79_Rule_Helpers::get_price_to_display( $product, $sale_price )
-                ) . $product->get_price_suffix( $sale_price );
             }
 
             return $new_price_html;

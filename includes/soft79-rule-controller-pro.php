@@ -43,7 +43,7 @@ final class SOFT79_Rule_Controller_PRO extends SOFT79_Rule_Controller {
      *  Returns all rules that are allowed for the user
      *  if is_admin() we return all the rules
      */
-    protected function get_rules() {    
+    protected function get_global_rules() {    
         //Remember the values, don't query again if already known
         if ($this->_rules === null) {
             $this->_rules = array();
@@ -65,7 +65,7 @@ final class SOFT79_Rule_Controller_PRO extends SOFT79_Rule_Controller {
                         $this->_rules[] = $rule;
                     }
                 } else {
-                    error_log ( sprintf( "SOFT79_Rule_Controller_PRO::get_rules() Unknown rule type: %s", $rule_type ) );
+                    error_log( sprintf( "SOFT79_Rule_Controller_PRO::get_global_rules() Unknown rule type: %s", $rule_type ) );
                 }
                 
             }
@@ -74,18 +74,14 @@ final class SOFT79_Rule_Controller_PRO extends SOFT79_Rule_Controller {
     }
     
     public function get_valid_rules_for( $product ) {    
-        $valid_rules = array();
-        foreach ( $this->get_rules() as $rule ) {
+        $valid_rules = parent::get_valid_rules_for( $product );
+
+        foreach ( $this->get_global_rules() as $rule ) {
             if ( $rule->is_valid_for_product( $product ) ) {
                 $valid_rules[] = $rule;
             }
         }
         
-        //Also add the local product rule
-        $valid_rules[] = new SOFT79_Bulk_Rule( SOFT79_Rule_Helpers::get_product_or_variation_id( $product ) );
-        if ( SOFT79_Rule_Helpers::is_variation( $product ) ) {
-            $valid_rules[] = new SOFT79_Bulk_Rule( SOFT79_Rule_Helpers::get_variable_product_id( $product ) );
-        }
         return $valid_rules;
     }
 

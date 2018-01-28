@@ -45,8 +45,8 @@ abstract class SOFT79_Rule {
      *  );
      *  @return float|bool false if no discount/not applicable otherwise the total discount value (negative is a discount)
      */
-    abstract public function get_discount_for_product($product, $quantity, &$data = null );
-    
+    abstract public function get_discount_for_cart_item($cart_item, &$data = null );
+
     abstract public function render_product_page_html( $product );
     abstract public function get_price_range( $product );
     

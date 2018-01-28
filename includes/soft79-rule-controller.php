@@ -22,31 +22,26 @@ class SOFT79_Rule_Controller {
         return $valid_rules;
     }
     
-    protected function get_rules() {    
-        //PRO ONLY
-        return array();
-    }
-
     //We cheat by setting the product price to bulk price 
     public function execute() {
-        
-        //error_log('action_woocommerce_before_calculate_totals');
-        $cart = WC()->cart;
-        //Acquaint the cart
-        foreach ( $this->get_rules( ) as $rule ) {
-            $rule->discover_cart( $cart->get_cart() );
-        }
-        
-        foreach ( $cart->get_cart() as $cart_item_key => $values ) {
-            $product = $values['data'];
-            $qty = $values['quantity'];
-            
+        $cart_items = WC()->cart->get_cart();
+
+        $discovered_rules = array();
+
+        foreach ( $cart_items as $cart_item_key => $cart_item ) {
+            $product = $cart_item['data'];
             
             //Find best-value rule for this cart item
             $bestrule_total_discount = null; 
             $bestrule_data = null ; 
             foreach ( $this->get_valid_rules_for( $product ) as $rule ) {
-                $total_discount = $rule->get_discount_for_product($product, $qty, $data);
+                //Acquaint the cart
+                if ( ! in_array( $rule, $discovered_rules ) ) {
+                    $rule->discover_cart( $cart_items );
+                    $discovered_rules[] = $rule;
+                }
+
+                $total_discount = $rule->get_discount_for_cart_item($cart_item, $data);
                 if ( $total_discount !== false && ( $total_discount < $bestrule_total_discount || $bestrule_total_discount === null ) ) {
                     $bestrule_total_discount = $total_discount;
                     $bestrule_data = $data;
@@ -55,7 +50,6 @@ class SOFT79_Rule_Controller {
                     }
                 }
             }
-            
             //Apply the best one, if found
             if ( $bestrule_data !== null ) {
                 //error_log("So the best price is $bestrule_avg_price " );
@@ -68,22 +62,6 @@ class SOFT79_Rule_Controller {
         }
     }      
 
-    /**
-     *  If a discount applies for qty 1, get the discounted price. Otherwise returns false
-     */
-    public function get_sale_price( $product ) {
-        $min_price = false;
-        foreach ( $this->get_valid_rules_for( $product ) as $price_rule ) {
-            $discount = $price_rule->get_discount_for_product( $product, 1, $data );
-            if ( $discount !== false && ( $min_price === false || $data['avg'] < $min_price  ) ) {
-                $min_price = $data['avg'];
-            }
-        }
-        if ( $min_price !== false ) {
-            return  $min_price;
-        }
-        return false;
-    }    
 
 // ===============================================================
 // Apply temporary data to the products during cart calculations
@@ -126,17 +104,15 @@ class SOFT79_Rule_Controller {
     }    
     
     /**
-     *  Set the product price and sale_price to the bulk price
+     *  Set the product price to the bulk price
      */
     public function set_product_bulk_price( $product, $bulk_price ) {
         //If no price change, don't do anything. This will avoid having a from_to string with the same prices
         if ( $bulk_price != $product->get_price() ) {
             if ( $this->get_temp_data( $product, 'original_price' ) === null ) {
                 $this->set_temp_data( $product, 'original_price', $product->get_price() );
-                $this->set_temp_data( $product, 'original_sale_price', $product->get_sale_price() );
             }
             $product->set_price( $bulk_price );
-            SOFT79_Rule_Helpers::set_product_prop( $product, 'sale_price',  $bulk_price );
         }
     }
     
@@ -150,8 +126,4 @@ class SOFT79_Rule_Controller {
         return $orig_price;
     }
     
-    public function get_original_sale_price( $product ) {
-        return $this->get_temp_data( $product, 'original_sale_price', $product->get_sale_price() );
-    }        
-
 }

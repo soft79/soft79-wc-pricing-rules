@@ -12,6 +12,8 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
     public $exclude_user_roles;
     public $bulk_rules;
     public $quantity_scope;
+
+    private $cart_items = null;
     
     public $display_on_prod_page = "description,table"; // "description,table", "description", "table" or "nothing"
         
@@ -52,7 +54,7 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
             $this->user_roles = array();
             $this->exclude_user_roles = array();
         }
-        
+
         $this->bulk_rules = get_post_meta( $this->post->ID, '_j79_bulk_rules', true );        
         if ( ! is_array( $this->bulk_rules ) ) {
             $this->bulk_rules = array();
@@ -62,6 +64,11 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
         if ( $display_on_prod_page !== '' ) {
             $this->display_on_prod_page = $display_on_prod_page;
         } 
+
+        /**
+         * Allow overriding the quantity scope. Value can be '' (single order line) or 'global' (acumulative)
+         */
+        $this->quantity_scope = apply_filters( 'soft79_wcpr_quantity_scope', $this->quantity_scope, $this );
 
         do_action( 'soft79_wcpr_bulk_rule_loaded', $this );
     }
@@ -135,86 +142,103 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
         //error_log("END OF ALL");
         
         return false;
-    }    
+    }
+
+    /**
+     * Only available after discover_cart
+     * 
+     * @return array|null Will be null if discover_cart was not yet executed
+     */
+    public function get_cart_items()
+    {
+        return $this->cart_items;
+    }
     
-    public function discover_cart( $cart_array ) {
+    public function discover_cart( $cart_items ) {
+        $this->cart_items = $cart_items;
         //error_log("Scope: " . $this->quantity_scope);
         if ( $this->quantity_scope == 'global' ) {
             $this->global_qty = 0;
-            foreach ( $cart_array as $cart_item_key => $values ) {
-                $product = $values['data'];
-                $qty = $values['quantity'];    
+            foreach ( $cart_items as $cart_item_key => $cart_item ) {
+                $product = $cart_item['data'];
+                $qty = $cart_item['quantity'];
                 if ( $this->is_valid_for_product( $product ) ) {
                     $this->global_qty += $qty;
                 }
             }
-            //error_log("Global qty: " . $this->global_qty);
-        } else {
         }
     }
-    
     
     /**
      *  Returns false if no discount applies, otherwise the total discount (negative value means discount)
      *  Additional data can be stored in optional $data
      */
-    function get_discount_for_product($product, $quantity, &$data = null ) {
-        
+    function get_discount_for_cart_item($cart_item, &$data = null ) {
+        if ( ! isset( $cart_item['data'], $cart_item['quantity'] ) ) return false;
+
+        $product = $cart_item['data'];
+        $quantity = $cart_item['quantity'];
+
         if ( ! $this->is_valid_for_product( $product ) || ! $this->is_valid_for_user() ) {
             return false;
         }
-        
-        $bulk_rules = $this->bulk_rules;
-        
-        $quantity_left = $quantity;
-        $original_price = SOFT79_WCPR()->controller->get_original_price( $product );        
-        $rule_stack = new SOFT79_Price_Acumulator();
+
+        /**
+         * Acumulative quantity that is taken in account for the current price rule
+         */
+        $accounted_quantity = $this->quantity_scope == 'global' ? $this->global_qty : $quantity;
+        $accounted_quantity = apply_filters( 'soft79_wcpr_accounted_quantity', $accounted_quantity, $this, $product, $this->get_cart_items() );
+
+        $original_price = SOFT79_WCPR()->controller->get_original_price( $product );
+        $prices = new SOFT79_Price_Acumulator();
 
         //Iterate backwards; first to find should be the best value for the customer
-        $index = count($bulk_rules);
-        while($index--) {    
-            $rule = $bulk_rules[$index];
-            //error_log( print_r($rule, true));
-            if ( $rule['qty_to'] > $rule['qty_from'] || $rule['qty_to'] == 0 ) {
+        for( $index = count($this->bulk_rules) - 1; $index >= 0; $index-- ) {
+
+            //Number of items on the current order-line that might still be discounted        
+            $items_left = min( $quantity, $accounted_quantity ) - $prices->total_qty();
+            if ( $items_left <= 0 ) break;
+            
+            $rule = $this->bulk_rules[$index];
+            if ( $rule['qty_to'] > $rule['qty_from'] || $rule['qty_to'] == 0 )
+            {
                 //Rule 'min_qty'
-                if ( $quantity_left >= $rule['qty_from'] || ($this->quantity_scope == 'global' && $this->global_qty >= $rule['qty_from'] ) ) {
-                    $qty_for_this_rule = $rule['qty_to'] == 0 ? $quantity_left : $rule['qty_to'];
+                if ( $accounted_quantity >= $rule['qty_from'] && ( $accounted_quantity <= $rule['qty_to'] || $rule['qty_to'] == 0 ) ) {
+                    $qty_for_this_rule = $rule['qty_to'] == 0 ? $items_left : $rule['qty_to'];
                     $price_for_this_rule = SOFT79_Rule_Helpers::get_relative_price( $original_price, $rule['price'] );
                     $taxed_price = SOFT79_Rule_Helpers::get_taxed_price( $product, $price_for_this_rule );
                     
-                    $rule_stack->add( $qty_for_this_rule, $taxed_price );
+                    $prices->add( $qty_for_this_rule, $taxed_price );
                 }
-            } 
-            elseif ( $rule['qty_to'] == $rule['qty_from'] ) {
-                //Rule 'pack'
-                if ( $quantity_left >= $rule['qty_from'] ) {
-                    $qty_for_this_rule = floor ( $quantity_left / $rule['qty_from'] ) * $rule['qty_from'];
+            } elseif ( $rule['qty_to'] == $rule['qty_from'] ) {
+                //Rule 'pack'. Packs can be combined i.e. if you have rules 12-12 and 6-6; a quantity of 20 would yield prices of pack_12 + pack_6 + 2
+                if ( $items_left >= $rule['qty_from'] && $items_left >= $rule['qty_from'] ) {
+                    $qty_for_this_rule = floor( $items_left / $rule['qty_from'] ) * $rule['qty_from'];
                     $price_for_this_rule = SOFT79_Rule_Helpers::get_relative_price( $original_price, $rule['price'] );                    
                     $taxed_price = SOFT79_Rule_Helpers::get_taxed_price( $product, $price_for_this_rule );
                     
-                    $rule_stack->add( $qty_for_this_rule, $taxed_price );
+                    $prices->add( $qty_for_this_rule, $taxed_price );
                 }
             }
-            
-            $quantity_left = $quantity - $rule_stack->total_qty();
-            if ( $quantity_left == 0 ) break;            
+
+            //Continue the loop; because 'pack'-rules can be stacked
         }
-        
-        
+
         //Bulk rule applied?
-        if ( $rule_stack->has_a_value() ) {        
-        
+        if ( $prices->has_a_value() ) {        
+            $quantity_left = $quantity - $prices->total_qty();
+
             //Complete the auto stack with single product prices
             if ( $quantity_left > 0 ) {                
-                $rule_stack->add( $quantity_left, $original_price );
+                $prices->add( $quantity_left, $original_price );
             }
             
             $data = array(
-                'avg' => $rule_stack->avg_price(),
-                'min' => $rule_stack->min_price(),
-                'max' => $rule_stack->max_price(),
-                'discount' => $rule_stack->total_price() - $quantity * $original_price
-            );            
+                'avg' => $prices->avg_price(),
+                'min' => $prices->min_price(),
+                'max' => $prices->max_price(),
+                'discount' => $prices->total_price() - $quantity * $original_price
+            ); 
             return $data['discount'];
             
         }
