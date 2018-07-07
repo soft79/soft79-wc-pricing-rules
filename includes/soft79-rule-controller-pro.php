@@ -23,7 +23,7 @@ final class SOFT79_Rule_Controller_PRO extends SOFT79_Rule_Controller {
                     'new_item'           => __( 'New Pricing rule', 'soft79-wc-pricing-rules' ),
                     'edit_item'          => __( 'Edit Pricing rule', 'soft79-wc-pricing-rules' ),
                     'view_item'          => __( 'View Pricing rule', 'soft79-wc-pricing-rules' ),
-                    'all_items'          => __( 'All Pricing rules', 'soft79-wc-pricing-rules' ),
+                    'all_items'          => __( 'Pricing rules', 'soft79-wc-pricing-rules' ),
                     'search_items'       => __( 'Search Pricing rules', 'soft79-wc-pricing-rules' ),
                     'not_found'          => __( 'No Pricing rules found.', 'soft79-wc-pricing-rules' ),
                     'not_found_in_trash' => __( 'No Pricing rules found in Trash.', 'soft79-wc-pricing-rules' )

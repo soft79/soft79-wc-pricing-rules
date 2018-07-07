@@ -24,23 +24,23 @@ final class SOFT79_Bulk_Pricing_Admin {
         }
 
         //Admin hooks
-        add_action( 'admin_enqueue_scripts', array( &$this, 'action_admin_enqueue_scripts' ) );
-        add_action( 'save_post', array( &$this, 'action_save_post' ), 10, 2 );
-        add_action( 'woocommerce_save_product_variation', array( &$this, 'action_save_product_variation' ), 10, 2 );
+        add_action( 'admin_enqueue_scripts', array( $this, 'action_admin_enqueue_scripts' ) );
+        add_action( 'save_post', array( $this, 'action_save_post' ), 10, 2 );
+        add_action( 'woocommerce_save_product_variation', array( $this, 'action_save_product_variation' ), 10, 2 );
 
-        add_action( 'woocommerce_product_options_general_product_data', array( &$this, 'action_admin_show_price_rules' ) );
-        add_action( 'woocommerce_variation_options_pricing', array( &$this, 'action_admin_show_variation_price_rules' ), 10, 3 );
+        add_action( 'woocommerce_product_options_general_product_data', array( $this, 'action_admin_show_price_rules' ) );
+        add_action( 'woocommerce_variation_options_pricing', array( $this, 'action_admin_show_variation_price_rules' ), 10, 3 );
         //Javascript code for dynamic adding of rows
         wp_enqueue_script( 'soft79_wcpr_admin', SOFT79_WCPR()->plugin_url() . '/assets/js/admin/admin.js'  , array(), SOFT79_WCPR()->get_version() );
         
         //Admin page
-        add_action( 'admin_init', array( &$this, 'action_admin_init' ) );    
-        add_action('admin_menu', array( &$this, 'action_admin_menu' ) );
+        add_action( 'admin_init', array( $this, 'action_admin_init' ) );    
+        add_action('admin_menu', array( $this, 'action_admin_menu' ) );
         
         
         //Custom post type meta box
         add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 30 );
-        add_action( 'save_post', array( $this, 'save_meta_boxes' ), 1, 2 );
+
         //Use WC's scripts on the custom post page
         add_filter( 'woocommerce_screen_ids', array( $this, 'filter_woocommerce_screen_ids' ) );
 
@@ -314,23 +314,14 @@ final class SOFT79_Bulk_Pricing_Admin {
      * @param  int $post_id
      * @param  object $post
      */
-    public function save_meta_boxes( $post_id, $post ) {
+    public function action_save_post( $post_id, $post ) {
         // $post_id and $post are required
         if ( empty( $post_id ) || empty( $post )  ) {
             return;
         }
         
-        if ( ! $post->post_type == "j79_wc_price_rule" ) {
-            return;
-        }
-
         // Dont' save meta boxes for revisions or autosaves
         if ( defined( 'DOING_AUTOSAVE' ) || is_int( wp_is_post_revision( $post ) ) || is_int( wp_is_post_autosave( $post ) ) ) {
-            return;
-        }
-
-        // Check the nonce
-        if ( empty( $_POST['soft79_meta_nonce'] ) || ! wp_verify_nonce( $_POST['soft79_meta_nonce'], 'soft79_save_data' ) ) {
             return;
         }
 
@@ -343,11 +334,30 @@ final class SOFT79_Bulk_Pricing_Admin {
         if ( ! current_user_can( 'edit_post', $post_id ) ) {
             return;
         }
-        SOFT79_Meta_Box_Bulk_Rules::save( $post_id, $post);
 
-    }    
+        switch ( $post->post_type ) {
+            //Global pricing rule
+            case "j79_wc_price_rule":
+                // Check the nonce
+                if ( empty( $_POST['soft79_meta_nonce'] ) || ! wp_verify_nonce( $_POST['soft79_meta_nonce'], 'soft79_save_data' ) ) {
+                    return;
+                }
 
-    
+                $this->save_admin_bulk_rules( $post_id, $post );
+                break;
+
+            //Product pricing rule
+            case "product":
+                if ( isset( $_POST['_j79_rules'] ) ) {
+                    $bulk_rules = $this->get_bulk_rules_from_form( $_POST['_j79_rules'] );
+                    //Remove the postmeta if no rules specified
+                    $this->update_post_bulk_rules( $post_id, $bulk_rules );
+                }
+                break;
+        }
+    }
+
+
     public function add_meta_boxes() {
             
         //Bulk rule meta box
@@ -420,23 +430,6 @@ final class SOFT79_Bulk_Pricing_Admin {
 
         return $bulk_rules;
         
-    }
-    
-    /**
-     *  Save the bulk rules as filled on the product edit page
-     */
-    public function action_save_post( $post_id, $post ) {
-        
-        //TODO: We could handle the custom post type as well 
-        if ( in_array( $post->post_type, array( 'product' ) ) && isset( $_POST['_j79_rules'] ) ) {
-            $bulk_rules = $this->get_bulk_rules_from_form( $_POST['_j79_rules'] );
-            //Remove the postmeta if no rules specified
-            if ( count( $bulk_rules ) == 0 ) {
-                delete_post_meta( $post_id, '_j79_bulk_rules' );
-            } else {
-                update_post_meta( $post_id, '_j79_bulk_rules', $bulk_rules );
-            }
-        }
     }
 
     private function html_select( $name, $values, $selected = null, $attribs = array() ) {
@@ -573,13 +566,16 @@ final class SOFT79_Bulk_Pricing_Admin {
         $rules = $rules[ $index ];
         
         $bulk_rules = $this->get_bulk_rules_from_form( $rules );
-        if ( count( $bulk_rules ) == 0 ) {
-            delete_post_meta( $variation_id, '_j79_bulk_rules' );
-        } else {
-            update_post_meta( $variation_id, '_j79_bulk_rules', $bulk_rules );
-        }
-    }    
+        $this->update_post_bulk_rules( $post_id, $bulk_rules );
+    }
     
+    /**
+     * Save pricing rules from meta box.
+     *
+     * @param int $post_id
+     * @param WP_Post $post
+     * @return void
+     */
     public function save_admin_bulk_rules( $post_id, $post ) {
     // Save
         
@@ -593,26 +589,45 @@ final class SOFT79_Bulk_Pricing_Admin {
             update_post_meta( $post_id, '_j79_display_on_prod_page', wc_clean( $_POST['_j79_display_on_prod_page'] ) );
         }
         
-        //Remove the postmeta if no rules specified
         if ( isset($_POST['_j79_rules']) ) {
             $bulk_rules = $this->get_bulk_rules_from_form( $_POST['_j79_rules'] );
-            if ( count( $bulk_rules ) == 0 ) {
-                delete_post_meta( $post_id, '_j79_bulk_rules' );
-            } else {
-                update_post_meta( $post_id, '_j79_bulk_rules', $bulk_rules );
-            }
+            $this->update_post_bulk_rules( $post_id, $bulk_rules );
+        }
+
+        //Extended fields
+        $user_roles            = isset( $_POST['_j79_user_roles'] ) ? $_POST['_j79_user_roles'] : '';
+        $exclude_user_roles    = isset( $_POST['_j79_exclude_user_roles'] ) ? $_POST['_j79_exclude_user_roles'] : '';
+        
+        $product_ids            = isset( $_POST['product_ids'] ) ? self::comma_separated_int_array(  $_POST['product_ids'] ) : '';
+        $exclude_product_ids    = isset( $_POST['exclude_product_ids'] ) ? self::comma_separated_int_array(  $_POST['exclude_product_ids'] ) : '';
+
+        $product_categories         = isset( $_POST['product_categories'] ) ? array_map( 'intval', $_POST['product_categories'] ) : array();
+        $exclude_product_categories = isset( $_POST['exclude_product_categories'] ) ? array_map( 'intval', $_POST['exclude_product_categories'] ) : array();
+        $exclude_sale_items     = isset( $_POST['exclude_sale_items'] ) ? 'yes' : 'no';    
+    
+        update_post_meta( $post_id, '_j79_user_roles', $user_roles );
+        update_post_meta( $post_id, '_j79_exclude_user_roles', $exclude_user_roles );
+        update_post_meta( $post_id, '_j79_product_ids', $product_ids );
+        update_post_meta( $post_id, '_j79_exclude_product_ids', $exclude_product_ids );
+        update_post_meta( $post_id, '_j79_product_categories', $product_categories );
+        update_post_meta( $post_id, '_j79_exclude_product_categories', $exclude_product_categories );
+        update_post_meta( $post_id, '_j79_exclude_sale_items', $exclude_sale_items );
+
+    }
+
+    public function update_post_bulk_rules( $post_id, $bulk_rules ) {
+        if ( count( $bulk_rules ) == 0 ) {
+            delete_post_meta( $post_id, '_j79_bulk_rules' );
+        } else {
+            update_post_meta( $post_id, '_j79_bulk_rules', $bulk_rules );
         }
     }
-    
 
-    
     function action_admin_show_price_rules() {
         global $thepostid;
         
         $rule = new SOFT79_Bulk_Rule( $thepostid );
         $this->render_admin_bulk_rules( $rule->bulk_rules );
-    }    
-    
+    }
 
-    
 }

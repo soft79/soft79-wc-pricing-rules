@@ -10,7 +10,6 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
     public $exclude_category_ids;
     public $user_roles;
     public $exclude_user_roles;
-    public $bulk_rules;
     public $quantity_scope;
 
     private $cart_items = null;
@@ -55,15 +54,10 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
             $this->exclude_user_roles = array();
         }
 
-        $this->bulk_rules = get_post_meta( $this->post->ID, '_j79_bulk_rules', true );        
-        if ( ! is_array( $this->bulk_rules ) ) {
-            $this->bulk_rules = array();
-        }
-        
         $display_on_prod_page = get_post_meta( $this->post->ID, '_j79_display_on_prod_page', true );        
         if ( $display_on_prod_page !== '' ) {
             $this->display_on_prod_page = $display_on_prod_page;
-        } 
+        }
 
         /**
          * Allow overriding the quantity scope. Value can be '' (single order line) or 'global' (acumulative)
@@ -72,6 +66,31 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
 
         do_action( 'soft79_wcpr_bulk_rule_loaded', $this );
     }
+
+    public function __get( $name ) {
+        if ( 'bulk_rules' === $name ) {
+            //Direct access to this property was deprecated in 1.3.1
+            error_log( sprintf( "Property '%s' should not be accessed directly.", __CLASS__ . '::' . $name ) );
+            return $this->get_bulk_rules();
+        }
+    }
+
+    /**
+     * Get all bulk rules for this item
+     *
+     * @return array
+     */
+    public function get_bulk_rules() {
+        if ( ! isset( $this->_bulk_rules ) ) {
+            $bulk_rules = get_post_meta( $this->post->ID, '_j79_bulk_rules', true );        
+            if ( ! is_array( $bulk_rules ) ) {
+                $bulk_rules = array();
+            }
+            $this->_bulk_rules = $bulk_rules;
+        }
+        return $this->_bulk_rules;
+    }
+    private $_bulk_rules = null;
 
     public function is_valid_for_user( $user = null ) {
         if ( sizeof( $this->user_roles ) > 0 || sizeof( $this->exclude_user_roles ) > 0 ) {
@@ -178,6 +197,7 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
 
         $product = $cart_item['data'];
         $quantity = $cart_item['quantity'];
+        $bulk_rules = $this->get_bulk_rules();
 
         if ( ! $this->is_valid_for_product( $product ) || ! $this->is_valid_for_user() ) {
             return false;
@@ -193,13 +213,13 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
         $prices = new SOFT79_Price_Acumulator();
 
         //Iterate backwards; first to find should be the best value for the customer
-        for( $index = count($this->bulk_rules) - 1; $index >= 0; $index-- ) {
+        for( $index = count($bulk_rules) - 1; $index >= 0; $index-- ) {
 
             //Number of items on the current order-line that might still be discounted        
             $items_left = min( $quantity, $accounted_quantity ) - $prices->total_qty();
             if ( $items_left <= 0 ) break;
             
-            $rule = $this->bulk_rules[$index];
+            $rule = $bulk_rules[$index];
             if ( $rule['qty_to'] > $rule['qty_from'] || $rule['qty_to'] == 0 )
             {
                 //Rule 'min_qty'
@@ -306,11 +326,11 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
     
         //Make array with values to show in the table
         $table_display_data = array();
-        
         //Add 1+ line if from...to price is shown
         if ( SOFT79_WCPR()->options['show_min_max_price_singular'] ) {
+            $bulk_rules = $this->get_bulk_rules();
             //Not if first rule already has a qty of 1
-            if ( isset( $this->bulk_rules[0]['qty_from'] ) && $this->bulk_rules[0]['qty_from'] > 1 ) {
+            if ( isset( $bulk_rules[0]['qty_from'] ) && $bulk_rules[0]['qty_from'] > 1 ) {
                 $table_display_data[] = $this->get_rule_display_data( array( 'qty_from' => 1, 'qty_to' => 0, 'price'=>'100%' ), $product );
             }
         }
@@ -364,31 +384,29 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
             $display_data = array( "qty" => $qty_rule_html, "price_html" => $price_html, "price" => $price );
 
             return apply_filters( 'soft79_wcpr_get_rule_display_data', $display_data, $rule, $product );
-    }    
+    }
     
     public function get_rules_valid_for_stock( $product ) {
         //Don't hide those rules
         if ( is_admin() || ! SOFT79_WCPR()->options['hide_rules_not_in_stock'] ) {
-            return $this->bulk_rules;
+            return $this->get_bulk_rules();
         }
-        
+
         if ( $product->managing_stock() && ! $product->backorders_allowed() ) {
             $stock_quantity = intval( SOFT79_Rule_Helpers::get_stock_quantity( $product ) );
             //Remove rules that do not apply, because of lack of product stock
             if ( $this->quantity_scope != 'global' || $stock_quantity == 0) {
                 $ret = array();
-                foreach ( $this->bulk_rules as $idx => $rule ) {
+                foreach ( $this->get_bulk_rules() as $idx => $rule ) {
                     if ( $rule['qty_from'] <= $stock_quantity ) {
                         $ret[] = $rule;
-                    }                    
+                    }
                 }
                 return $ret;
-            }        
+            }
         }
-        
 
-        
-        return $this->bulk_rules;
+        return $this->get_bulk_rules();
     }
     
 }
