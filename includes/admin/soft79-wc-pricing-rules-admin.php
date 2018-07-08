@@ -104,8 +104,8 @@ final class SOFT79_Bulk_Pricing_Admin {
 
         $html = '';
         foreach ( $args['options'] as $key => $label ) {
-            $html .= sprintf( '<input type="radio" class="radio" id="%1$s[%2$s][%3$s]" name="%1$s[%2$s]" value="%3$s"%4$s />', $menu, $id, $key, checked( $current, $key, false ) );
-            $html .= sprintf( '<label for="%1$s[%2$s][%3$s]"> %4$s</label><br>', $menu, $id, $key, $label);
+            $html .= sprintf( '<input type="radio" class="radio" id="%1$s[%2$s][%3$s]" name="%1$s[%2$s]" value="%3$s"%4$s />', $menu, $id, esc_attr( $key ), checked( $current, $key, false ) );
+            $html .= sprintf( '<label for="%1$s[%2$s][%3$s]"> %4$s</label><br>', $menu, $id, $key, wp_kses_post( $label ) );
         }
         
         // Displays option description.
@@ -114,7 +114,36 @@ final class SOFT79_Bulk_Pricing_Admin {
         }
 
         echo $html;
-    }    
+    }
+
+    /**
+     * Displays a select-box settings field
+     *
+     * @param array   $args settings field args
+     */
+    public function select_element_callback( $args ) {
+        $menu = $args['menu'];
+        $id = $args['id'];
+
+        if ( isset( SOFT79_WCPR()->options[$id] ) ) {
+            $current = SOFT79_WCPR()->options[$id];
+        } else {
+            $current = isset( $args['default'] ) ? $args['default'] : '';
+        }
+
+        $html = sprintf( '<select id="%1$s[%2$s]" name="%1$s[%2$s]">', $menu, $id );
+        foreach ( $args['options'] as $key => $label ) {
+            $html .= sprintf( '<option value="%1$s" %2$s>%3$s</option>', esc_attr( $key ), selected( $current, $key, false ), esc_html( $label ) );
+        }
+        $html .= '</select>';
+
+        // Displays option description.
+        if ( isset( $args['description'] ) ) {
+            $html .= sprintf( '<p class="description">%s</p>', $args['description'] );
+        }
+
+        echo $html;
+    }
 
     public function section_null_callback() {
     
@@ -146,72 +175,96 @@ final class SOFT79_Bulk_Pricing_Admin {
             $option,
             'display',
             array(
-                'menu'            => $option,
+                'menu'          => $option,
                 'id'            => 'show_min_max_price',
-                'description'    => 
+                'description'   =>
                     __( 'If a discount is available for the product, display the min-max price range on the category pages.', 'soft79-wc-pricing-rules' )
                     . " " . __( 'Example:', 'soft79-wc-pricing-rules' ) . " " . wc_price(8) . " - " . wc_price(10)
             )
         );        
         
-         add_settings_field(
+        add_settings_field(
             'show_min_max_price_singular',
             __( 'Show min-max price range on product detail page', 'soft79-wc-pricing-rules' ),
             array( &$this, 'checkbox_element_callback' ),
             $option,
             'display',
             array(
-                'menu'            => $option,
+                'menu'          => $option,
                 'id'            => 'show_min_max_price_singular',
-                'description'    => 
+                'description'   =>
                     __( 'If a discount is available for the product, display the min-max price range on the product detail pages.', 'soft79-wc-pricing-rules' )
                     . " " . __( 'Example:', 'soft79-wc-pricing-rules' ) . " " . wc_price(8) . " - " . wc_price(10)
             )
         );         
 
-         add_settings_field(
+        add_settings_field(
             'show_cart_itemprice_as_from_to',
             __( 'Show from-to single item price on cart page', 'soft79-wc-pricing-rules' ),
             array( &$this, 'checkbox_element_callback' ),
             $option,
             'display',
             array(
-                'menu'            => $option,
+                'menu'          => $option,
                 'id'            => 'show_cart_itemprice_as_from_to',
-                'description'    => 
+                'description'   =>
                     __( 'If a discount has been applied to the product, display the from-to single product price on the cart page.', 'soft79-wc-pricing-rules' )
                     . " " . __( 'Example:', 'soft79-wc-pricing-rules' ) . " <del>" . wc_price(10) . "</del> <ins>" . wc_price(8) . "</ins>"
             )
         );
 
-         add_settings_field(
+        add_settings_field(
             'show_cart_subtotal_as_from_to',
             __( 'Show from-to item subtotal on cart page', 'soft79-wc-pricing-rules' ),
             array( &$this, 'checkbox_element_callback' ),
             $option,
             'display',
             array(
-                'menu'            => $option,
+                'menu'          => $option,
                 'id'            => 'show_cart_subtotal_as_from_to',
-                'description'    => 
+                'description'   =>
                     __( 'If a discount has been applied to the product, display the from-to subtotal on the cart page.', 'soft79-wc-pricing-rules' )
                     . " " . __( 'Example:', 'soft79-wc-pricing-rules' ) . " <del>" . wc_price(100) . "</del> <ins>" . wc_price(80) . "</ins>"
             )
-        );            
+        );
 
-         add_settings_field(
+        add_settings_field(
             'hide_rules_not_in_stock',
             __( 'Hide discounts if not enough stock', 'soft79-wc-pricing-rules' ),
-            array( &$this, 'checkbox_element_callback' ),
+            array( $this, 'checkbox_element_callback' ),
             $option,
             'display',
             array(
-                'menu'            => $option,
+                'menu'          => $option,
                 'id'            => 'hide_rules_not_in_stock',
-                'description'    => 
+                'description'   =>
                     __( 'Prevent discounts to be displayed if the amount of items in stock is not sufficient for the discount to be applied.', 'soft79-wc-pricing-rules' )
             )
-        );    
+        );
+
+        add_settings_field(
+            'pack_price_format',
+            __( 'Package price format', 'soft79-wc-pricing-rules' ),
+            array( $this, 'radio_element_callback' ),
+            $option,
+            'display',
+            array(
+                'menu'          => $option,
+                'id'            => 'pack_price_format',
+                'options'       => array(
+                    '0'    =>
+                        __( 'Unit price (default)' , 'soft79-wc-pricing-rules' )
+                        . " <i>" . __( 'Example:', 'soft79-wc-pricing-rules' ) . " " .wc_price(10) . "</i>",
+                    '1'    =>
+                        __( 'Total price' , 'soft79-wc-pricing-rules' )
+                        . " <i>" . __( 'Example:', 'soft79-wc-pricing-rules' ) . " " . wc_price(100) . "</i>",
+                    '2'    =>
+                        __( 'Both Total and Unit price' , 'soft79-wc-pricing-rules' )
+                        . " <i>" . __( 'Example:', 'soft79-wc-pricing-rules' ) . " " . sprintf( __('%1$s (%2$s each)', "soft79-wc-pricing-rules"), wc_price(100), wc_price(10) ) . "</i>",
+                ),
+                'description'   => __( 'The format of the package price in the price table. Package price applies when \'From\' and \'To\' quantities are the same.', 'soft79-wc-pricing-rules' )
+            )
+        );
 
         //Rules
         if ( SOFT79_WCPR()->controller->is_pro() ) {
@@ -242,8 +295,6 @@ final class SOFT79_Bulk_Pricing_Admin {
             );
         
         }
-        
-        
 
         // Register settings.
         register_setting( $option, $option, array( &$this, 'validate_options' ) );
@@ -271,13 +322,13 @@ final class SOFT79_Bulk_Pricing_Admin {
         }
         
         //checkboxes must have value 0 if not checked
-        $cbs = array( 
-            'show_min_max_price', 
-            'show_min_max_price_singular', 
-            'show_cart_itemprice_as_from_to', 
+        $cbs = array(
+            'show_min_max_price',
+            'show_min_max_price_singular',
+            'show_cart_itemprice_as_from_to',
             'hide_rules_not_in_stock'
         );
-        
+
         foreach ( $cbs as $cb ) {
             if ( ! isset( $output[$cb] ) ) {
                 $output[$cb] = '0';
@@ -291,7 +342,7 @@ final class SOFT79_Bulk_Pricing_Admin {
 ?>
         <h2><?php _e( 'Pricing Rules Settings', 'soft79-wc-pricing-rules' ); ?></h2>
         <form method="post" action="options.php"> 
-        <?php 
+        <?php
         settings_fields( 'j79_price_rules_settings' );
         do_settings_sections( 'j79_price_rules_settings' );
         ?>
@@ -299,9 +350,9 @@ final class SOFT79_Bulk_Pricing_Admin {
         </form>
         <h3><?php _e( 'Support', 'soft79-wc-pricing-rules' ); ?></h3>
         <p><?php _e( 'We are currently working on adding new functionality to this plugin.', 'soft79-wc-pricing-rules' ); ?></p>
-        <p><?php 
-            printf( 
-                __( 'Please check out %s for feature requests, support or for the latest news.', 'soft79-wc-pricing-rules' ), 
+        <p><?php
+            printf(
+                __( 'Please check out %s for feature requests, support or for the latest news.', 'soft79-wc-pricing-rules' ),
                 '<a href="http://www.soft79.nl" target="_blank">www.soft79.nl</a>'
         ); ?></p>
 <?php
@@ -410,7 +461,7 @@ final class SOFT79_Bulk_Pricing_Admin {
                 $price = wc_format_decimal( trim( str_replace( '%', '', $price ) ) ) . "%";
             } else {
                 $price = wc_format_decimal( trim( $price ) );
-            }                
+            }
             
             if ( ($qty_from > 0 || $qty_to > 0 ) && $price !== '' ) {
                 $bulk_rules[] = array( 
@@ -471,7 +522,7 @@ final class SOFT79_Bulk_Pricing_Admin {
                     esc_attr_e( 'Qty', 'woocommerce' ); 
                 ?>" class="input-text wc_input_decimal" size="6" type="text" name="<?php echo $field_name; ?>[qty_from][]" value="<?php
                     echo $qty_from; 
-                ?>" />                
+                ?>" />
                 <input placeholder="<?php 
                     esc_attr_e( 'Qty', 'woocommerce' ); 
                 ?>" class="input-text wc_input_decimal" size="6" type="text" name="<?php echo $field_name; ?>[qty_to][]" value="<?php
@@ -483,7 +534,7 @@ final class SOFT79_Bulk_Pricing_Admin {
                     echo wc_format_localized_price( $price );
                 ?>" />
                 <a href="#" class="soft79_wcpr_delete_row">X</a>
-            </span>            
+            </span>
         </p>
 <?php
     }
@@ -538,13 +589,13 @@ final class SOFT79_Bulk_Pricing_Admin {
     }
 
     public function render_variation_bulk_rules( $bulk_rules, $loop ) {
-    	echo "<div>";
-		echo '<p class="form-row form-row-full">';
+        echo "<div>";
+        echo '<p class="form-row form-row-full">';
 
         $this->render_admin_bulk_rules( $bulk_rules, $loop );
 
-		echo '</p>';
-    	echo "</div>";
+        echo '</p>';
+        echo "</div>";
 
     }
 
@@ -604,7 +655,7 @@ final class SOFT79_Bulk_Pricing_Admin {
         $product_categories         = isset( $_POST['product_categories'] ) ? array_map( 'intval', $_POST['product_categories'] ) : array();
         $exclude_product_categories = isset( $_POST['exclude_product_categories'] ) ? array_map( 'intval', $_POST['exclude_product_categories'] ) : array();
         $exclude_sale_items     = isset( $_POST['exclude_sale_items'] ) ? 'yes' : 'no';    
-    
+
         update_post_meta( $post_id, '_j79_user_roles', $user_roles );
         update_post_meta( $post_id, '_j79_exclude_user_roles', $exclude_user_roles );
         update_post_meta( $post_id, '_j79_product_ids', $product_ids );
@@ -630,4 +681,16 @@ final class SOFT79_Bulk_Pricing_Admin {
         $this->render_admin_bulk_rules( $rule->bulk_rules );
     }
 
+    /**
+     * Parse an array or comma separated string; make sure they are valid ints and return as comma separated string
+     * @param array|string $int_array
+     * @return string comma separated int array
+     */
+    public static function comma_separated_int_array( $int_array ) {
+        //Source can be a comma separated string (select2) , or an int array (chosen)
+        if ( ! is_array( $int_array) ) {
+            $int_array = explode( ',', $int_array );
+        }
+        return implode( ',', array_filter( array_map( 'intval', $int_array ) ) );
+    }
 }

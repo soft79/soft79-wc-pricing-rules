@@ -70,6 +70,7 @@ function soft79_wcpr_min_max_price_html( $new_price_html, $original_price_html, 
 == Changelog ==
 
 = 1.3.1 =
+* FEATURE: Customizable package price format
 * FIX: Admin Javascript in combination with newest WooCommerce version
 * INTERNAL: Created SOFT79_Bulk_Pricing_Admin::update_post_bulk_rules
 

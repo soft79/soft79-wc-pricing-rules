@@ -184,19 +184,6 @@ class SOFT79_Meta_Box_Bulk_Rules {
         return self::$wc_version = false; // Not found
     }
 
-    /**
-     * Parse an array or comma separated string; make sure they are valid ints and return as comma separated string
-     * @param array|string $int_array 
-     * @return string comma separated int array
-     */
-    public static function comma_separated_int_array( $int_array ) {
-        //Source can be a comma separated string (select2) , or an int array (chosen)
-        if ( ! is_array( $int_array) ) {
-            $int_array = explode( ',', $int_array );
-        }
-        return implode( ',', array_filter( array_map( 'intval', $int_array ) ) );
-    }    
-
 // HTML Output helper functions
 
     /**
