@@ -37,14 +37,6 @@ More information on [www.soft79.nl](http://www.soft79.nl).
 
 == Frequently Asked Questions ==
 
-= Is the plugin translatable? =
-
-Yes, all string values are translatable through the supplied POT/PO/MO files. In WPML translatable items appear in the context `soft79-wc-pricing-rules` in "String Translations".
-
-This plugin is fully compatible with qTranslate-X.
-
-This plugin can be used in combination with WPML, but filtering rules by product or category will not work (yet!).
-
 = Can I change the way the discounted price is displayed? =
 
 You can use the filter `'soft79_wcpr_min_max_price_html' ( $new_price_html, $original_price_html, $product, $min_price, $max_price, $is_singular )`
