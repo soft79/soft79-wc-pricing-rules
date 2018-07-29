@@ -61,6 +61,9 @@ function soft79_wcpr_min_max_price_html( $new_price_html, $original_price_html, 
 
 == Changelog ==
 
+= 1.3.2-dev =
+* TODO/WIP: Invalid price calculated for tax exempt customers
+
 = 1.3.1 =
 * FEATURE: Customizable package price format
 * FIX: Admin Javascript in combination with newest WooCommerce version

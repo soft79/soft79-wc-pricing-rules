@@ -226,8 +226,8 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
                 if ( $accounted_quantity >= $rule['qty_from'] && ( $accounted_quantity <= $rule['qty_to'] || $rule['qty_to'] == 0 ) ) {
                     $qty_for_this_rule = $rule['qty_to'] == 0 ? $items_left : $rule['qty_to'];
                     $price_for_this_rule = SOFT79_Rule_Helpers::get_relative_price( $original_price, $rule['price'] );
-                    $taxed_price = SOFT79_Rule_Helpers::get_taxed_price( $product, $price_for_this_rule );
-                    
+                    //$taxed_price = SOFT79_Rule_Helpers::get_taxed_price( $product, $price_for_this_rule );
+                    $taxed_price = $price_for_this_rule;
                     $prices->add( $qty_for_this_rule, $taxed_price );
                 }
             } elseif ( $rule['qty_to'] == $rule['qty_from'] ) {
@@ -235,8 +235,8 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
                 if ( $items_left >= $rule['qty_from'] && $items_left >= $rule['qty_from'] ) {
                     $qty_for_this_rule = floor( $items_left / $rule['qty_from'] ) * $rule['qty_from'];
                     $price_for_this_rule = SOFT79_Rule_Helpers::get_relative_price( $original_price, $rule['price'] );                    
-                    $taxed_price = SOFT79_Rule_Helpers::get_taxed_price( $product, $price_for_this_rule );
-                    
+                    //$taxed_price = SOFT79_Rule_Helpers::get_taxed_price( $product, $price_for_this_rule );
+                    $taxed_price = $price_for_this_rule;
                     $prices->add( $qty_for_this_rule, $taxed_price );
                 }
             }
