@@ -617,7 +617,7 @@ final class SOFT79_Bulk_Pricing_Admin {
         $rules = $rules[ $index ];
         
         $bulk_rules = $this->get_bulk_rules_from_form( $rules );
-        $this->update_post_bulk_rules( $post_id, $bulk_rules );
+        $this->update_post_bulk_rules( $variation_id, $bulk_rules );
     }
     
     /**

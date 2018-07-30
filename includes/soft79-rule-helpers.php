@@ -1,20 +1,11 @@
 <?php
 class SOFT79_Rule_Helpers {
-    /**
-     *  Get price incl/excl tax (depends on setting "Prices Entered With Tax" in WooCommerce)
-     */
-    static function get_taxed_price( $product, $price ) {
-        if ( get_option('woocommerce_prices_include_tax') == 'yes' ) {
-            return self::get_price_including_tax( $product, 1, $price );
-        } else {
-            return self::get_price_excluding_tax( $product, 1, $price );
-        }
-    }    
+
     /**     
      *  Get price incl/excl tax for cart (depends on setting "woocommerce_tax_display_cart" in WooCommerce)     
      */
     static function get_cart_taxed_price( $product, $price, $cart = null ) {
-        if ($cart == null) {
+        if ( is_null( $cart ) ) {
             $cart = WC()->cart;
         }
         if ( $cart->tax_display_cart == 'excl' ) {
@@ -24,7 +15,13 @@ class SOFT79_Rule_Helpers {
         }
     }
     
-    //New price can be any price or a discount percentage
+	/**
+	 * New price can be any price or a discount percentage e.g. '-10%', '-1.00' or '4.95'
+	 *
+	 * @param string|float $orig_price
+	 * @param string $new_price
+	 * @return void
+	 */
     static function get_relative_price( $orig_price, $new_price) {
         if ($new_price == '') {
             return $orig_price;
@@ -138,7 +135,7 @@ class SOFT79_Rule_Helpers {
     }
 
     public static function get_price_including_tax( $product, $qty = 1, $price = '' ) {
-        if ($price === null) { 
+        if ( is_null( $price ) ) { 
             $price = $product->get_price();
         }
 
@@ -150,7 +147,7 @@ class SOFT79_Rule_Helpers {
     }  
 
     public static function get_price_excluding_tax( $product, $qty = 1, $price = '' ) {
-        if ($price === null) { 
+        if ( is_null( $price ) ) { 
             $price = $product->get_price();
         }
 
@@ -168,7 +165,7 @@ class SOFT79_Rule_Helpers {
      * @return float
      */
     public static function get_price_to_display( $product, $price = null ) {
-        if ($price === null) { 
+        if ( is_null( $price ) ) { 
             $price = $product->get_price();
         }
 
