@@ -3,9 +3,9 @@
  * Plugin Name: SOFT79 Pricing Rules for Woocommerce PRO
  * Plugin URI: http://www.soft79.nl
  * Description: Pricing rules for WooCommerce
- * Version: 1.4.0
- * WC requires at least: 2.6.0
- * WC tested up to: 3.4.4
+ * Version: 1.4.1
+ * WC requires at least: 3.0.0
+ * WC tested up to: 3.5.7
  * Author: Soft79
  * License: GPL2
  */
@@ -35,7 +35,7 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
     //@include_once('includes/soft79-wc-pricing-rules-updater.php');
 
     final class SOFT79_WC_Pricing_Rules_Plugin {
-        public $version = '1.4.0';
+        public $version = '1.4.1';
 
         public $admin = null;
 

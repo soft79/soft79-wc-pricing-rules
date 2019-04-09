@@ -32,7 +32,7 @@ class SOFT79_Meta_Box_Bulk_Rules {
         ?>
         <p class="form-field">
         <label><?php _e( 'Products', 'woocommerce' ); ?></label>
-        <?php self::render_admin_product_selector( 'product_ids', 'product_ids', $rule->product_ids ); ?>
+        <?php self::render_admin_product_selector( '_j79_product_ids', '_j79_product_ids', $rule->product_ids ); ?>
         <img class="help_tip" data-tip='<?php _e( 'Products which need to be in the cart to use this pricing rule.', 'soft79-wc-pricing-rules' ); ?>' src="<?php echo WC()->plugin_url(); ?>/assets/images/help.png" height="16" width="16" />
         </p>
         <?php
@@ -41,7 +41,7 @@ class SOFT79_Meta_Box_Bulk_Rules {
         // Exclude Product ids
         ?>
         <p class="form-field"><label><?php _e( 'Exclude products', 'woocommerce' ); ?></label>
-        <?php self::render_admin_product_selector( 'exclude_product_ids', 'exclude_product_ids', $rule->exclude_product_ids ); ?>
+        <?php self::render_admin_product_selector( '_j79_exclude_product_ids', '_j79_exclude_product_ids', $rule->exclude_product_ids ); ?>
         <img class="help_tip" data-tip='<?php 
             _e( 'Products which must not be in the cart to use this pricing rule.', 'soft79-wc-pricing-rules' );
         ?>' src="<?php echo WC()->plugin_url(); ?>/assets/images/help.png" height="16" width="16" />
@@ -52,8 +52,8 @@ class SOFT79_Meta_Box_Bulk_Rules {
         //=============================
         // Categories
         ?>
-        <p class="form-field"><label for="product_categories"><?php _e( 'Product categories', 'woocommerce' ); ?></label>
-        <select id="product_categories" name="product_categories[]" style="width: 50%;"  class="wc-enhanced-select" multiple="multiple" data-placeholder="<?php esc_attr_e( 'Any category', 'woocommerce' ); ?>">
+        <p class="form-field"><label for="_j79_product_categories"><?php _e( 'Product categories', 'woocommerce' ); ?></label>
+        <select id="_j79_product_categories" name="_j79_product_categories[]" style="width: 50%;"  class="wc-enhanced-select" multiple="multiple" data-placeholder="<?php esc_attr_e( 'Any category', 'woocommerce' ); ?>">
             <?php
                 $categories   = get_terms( 'product_cat', 'orderby=name&hide_empty=0' );
 

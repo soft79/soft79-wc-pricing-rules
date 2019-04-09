@@ -649,11 +649,11 @@ final class SOFT79_Bulk_Pricing_Admin {
         $user_roles            = isset( $_POST['_j79_user_roles'] ) ? $_POST['_j79_user_roles'] : '';
         $exclude_user_roles    = isset( $_POST['_j79_exclude_user_roles'] ) ? $_POST['_j79_exclude_user_roles'] : '';
         
-        $product_ids            = isset( $_POST['product_ids'] ) ? self::comma_separated_int_array(  $_POST['product_ids'] ) : '';
-        $exclude_product_ids    = isset( $_POST['exclude_product_ids'] ) ? self::comma_separated_int_array(  $_POST['exclude_product_ids'] ) : '';
+        $product_ids            = isset( $_POST['_j79_product_ids'] ) ? self::comma_separated_int_array(  $_POST['_j79_product_ids'] ) : '';
+        $exclude_product_ids    = isset( $_POST['_j79_exclude_product_ids'] ) ? self::comma_separated_int_array(  $_POST['_j79_exclude_product_ids'] ) : '';
 
-        $product_categories         = isset( $_POST['product_categories'] ) ? array_map( 'intval', $_POST['product_categories'] ) : array();
-        $exclude_product_categories = isset( $_POST['exclude_product_categories'] ) ? array_map( 'intval', $_POST['exclude_product_categories'] ) : array();
+        $product_categories         = isset( $_POST['_j79_product_categories'] ) ? array_map( 'intval', $_POST['_j79_product_categories'] ) : array();
+        $exclude_product_categories = isset( $_POST['_j79_exclude_product_categories'] ) ? array_map( 'intval', $_POST['_j79_exclude_product_categories'] ) : array();
         $exclude_sale_items     = isset( $_POST['exclude_sale_items'] ) ? 'yes' : 'no';    
 
         update_post_meta( $post_id, '_j79_user_roles', $user_roles );

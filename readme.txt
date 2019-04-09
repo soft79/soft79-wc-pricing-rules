@@ -3,8 +3,8 @@ Contributors: josk79
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=5T9XQBCS2QHRY&lc=NL&item_name=Jos%20Koenis&item_number=wordpress%2dplugin&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
 Tags: woocommerce, pricing, discount
 Requires at least: 4.0.0
-Tested up to: 4.9.7
-Stable tag: 1.4.0
+Tested up to: 5.1.1
+Stable tag: 1.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,6 +60,9 @@ function soft79_wcpr_min_max_price_html( $new_price_html, $original_price_html, 
 3. Optionally presents a table with available prices/discounts to the customer.
 
 == Changelog ==
+
+= 1.4.1 =
+* FIX: Not able to exclude categories on global product rules
 
 = 1.4.0 =
 * FIX: Invalid discount calculated for tax exempt customers
