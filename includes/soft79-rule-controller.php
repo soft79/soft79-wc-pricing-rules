@@ -60,7 +60,25 @@ class SOFT79_Rule_Controller {
             }
             
         }
-    }      
+    }
+
+    /**
+     *  If a discount applies for qty 1, get the discounted price. Otherwise returns false
+     */
+    public function get_sale_price( $product ) {
+        $min_price = false;
+        foreach ( $this->get_valid_rules_for( $product ) as $price_rule ) {
+            $data = null;
+            $discount = $price_rule->get_discount_for_product( $product, 1, $data ); //$data gets written to.
+            if ( $discount !== false && ( $min_price === false || $data['avg'] < $min_price  ) ) {
+                $min_price = $data['avg'];
+            }
+        }
+        if ( $min_price !== false && $min_price < $product->get_price() ) {
+            return  $min_price;
+        }
+        return false;
+    }
 
 
 // ===============================================================

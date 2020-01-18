@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=5T9XQ
 Tags: woocommerce, pricing, discount
 Requires at least: 4.0.0
 Tested up to: 5.1.1
-Stable tag: 1.4.1
+Stable tag: 1.4.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,6 +62,8 @@ function soft79_wcpr_min_max_price_html( $new_price_html, $original_price_html, 
 == Changelog ==
 
 = 1.4.2 =
+* FEATURE: WP-Multilang support
+* FIX: Display sale price if a discount applies to 1x quantity
 * FIX: PHP Notice about count() and bulk_rules
 
 = 1.4.1 =

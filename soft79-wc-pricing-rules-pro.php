@@ -208,6 +208,16 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
                 }
             }
 
+            //Sale price to show?
+            $sale_price = $this->controller->get_sale_price( $product );
+            if ( $sale_price !== false ) {
+                $original_price = $this->controller->get_original_price( $product );
+                $new_price_html = SOFT79_Rule_Helpers::format_sale_price(
+                    SOFT79_Rule_Helpers::get_price_to_display( $product, $original_price ),
+                    SOFT79_Rule_Helpers::get_price_to_display( $product, $sale_price )
+                ) . $product->get_price_suffix( $sale_price );
+            }
+
             return $new_price_html;
         }
 

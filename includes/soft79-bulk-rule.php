@@ -187,7 +187,15 @@ class SOFT79_Bulk_Rule extends SOFT79_Rule {
             }
         }
     }
-    
+
+    function get_discount_for_product($product, $quantity, &$data ) {
+        $cart_item = array(
+            'data' => $product,
+            'quantity' => $quantity
+        );
+        return $this->get_discount_for_cart_item( $cart_item, $data );
+    }
+
     /**
      *  Returns false if no discount applies, otherwise the total discount (negative value means discount)
      *  Additional data can be stored in optional $data
