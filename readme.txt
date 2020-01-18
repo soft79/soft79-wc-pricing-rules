@@ -61,6 +61,9 @@ function soft79_wcpr_min_max_price_html( $new_price_html, $original_price_html, 
 
 == Changelog ==
 
+= 1.4.2 =
+* FIX: PHP Notice about count() and bulk_rules
+
 = 1.4.1 =
 * FIX: Not able to exclude categories on global product rules
 

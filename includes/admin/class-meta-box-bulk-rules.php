@@ -16,7 +16,7 @@ class SOFT79_Meta_Box_Bulk_Rules {
 
         echo '<div id="j79_pricing_rules_meta" class="panel woocommerce_options_panel">';
 
-        SOFT79_WCPR()->admin->render_admin_bulk_rules( $rule->bulk_rules );
+        SOFT79_WCPR()->admin->render_admin_bulk_rules( $rule->get_bulk_rules() );
             
         // Quantity scope
         woocommerce_wp_select( array( 

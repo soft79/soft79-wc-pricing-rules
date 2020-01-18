@@ -605,7 +605,7 @@ final class SOFT79_Bulk_Pricing_Admin {
 
         //var_dump($variation); die();
         $rule = new SOFT79_Bulk_Rule( $variation_id );
-        $this->render_variation_bulk_rules( $rule->bulk_rules, $loop );
+        $this->render_variation_bulk_rules( $rule->get_bulk_rules(), $loop );
     }
 
     public function action_save_product_variation( $variation_id, $index ) {
@@ -667,7 +667,7 @@ final class SOFT79_Bulk_Pricing_Admin {
     }
 
     public function update_post_bulk_rules( $post_id, $bulk_rules ) {
-        if ( count( $bulk_rules ) == 0 ) {
+        if ( ! isset( $bulk_rules) || 0 == count( $bulk_rules ) ) {
             delete_post_meta( $post_id, '_j79_bulk_rules' );
         } else {
             update_post_meta( $post_id, '_j79_bulk_rules', $bulk_rules );
@@ -678,7 +678,7 @@ final class SOFT79_Bulk_Pricing_Admin {
         global $thepostid;
         
         $rule = new SOFT79_Bulk_Rule( $thepostid );
-        $this->render_admin_bulk_rules( $rule->bulk_rules );
+        $this->render_admin_bulk_rules( $rule->get_bulk_rules() );
     }
 
     /**
