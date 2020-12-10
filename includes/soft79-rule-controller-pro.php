@@ -5,7 +5,7 @@ final class SOFT79_Rule_Controller_PRO extends SOFT79_Rule_Controller {
         
     public function __construct( $options = null ) {
         
-        parent::__construct();        
+        parent::__construct( $options );
         $this->create_post_type();
         
     }    

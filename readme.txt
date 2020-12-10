@@ -2,8 +2,8 @@
 Contributors: josk79
 Tags: woocommerce, pricing, discount
 Requires at least: 4.0.0
-Tested up to: 5.3.2
-Stable tag: 1.4.3
+Tested up to: 5.6
+Stable tag: 1.4.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -59,6 +59,11 @@ function soft79_wcpr_min_max_price_html( $new_price_html, $original_price_html, 
 3. Optionally presents a table with available prices/discounts to the customer.
 
 == Changelog ==
+
+= 1.4.4 =
+*Release Date - 2020-12-10*
+* FIX: Deprecated WC_Cart->tax_display_cart()
+* FIX: Options in PRO constructor
 
 = 1.4.3 =
 *Release Date - 2020-01-20*

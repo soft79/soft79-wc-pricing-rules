@@ -8,11 +8,22 @@ class SOFT79_Rule_Helpers {
         if ( is_null( $cart ) ) {
             $cart = WC()->cart;
         }
-        if ( $cart->tax_display_cart == 'excl' ) {
+        if ( self::get_tax_price_display_mode( $cart ) == 'excl' ) {
             return self::get_price_excluding_tax( $product, 1, $price );
         } else {
             return self::get_price_including_tax( $product, 1, $price );
         }
+    }
+
+    static function get_tax_price_display_mode( $cart = null ) {
+        if ( is_null( $cart ) ) {
+            $cart = WC()->cart;
+        }
+        if ( is_callable( [ $cart, 'get_tax_price_display_mode' ] ) ) {
+            return $cart->get_tax_price_display_mode();
+        }
+
+        return $cart->tax_display_cart;
     }
     
 	/**

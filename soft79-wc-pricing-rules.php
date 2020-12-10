@@ -3,9 +3,9 @@
  * Plugin Name: SOFT79 Pricing Rules for Woocommerce
  * Plugin URI: http://www.soft79.nl
  * Description: Pricing rules for WooCommerce
- * Version: 1.4.3
+ * Version: 1.4.4
  * WC requires at least: 3.0.0
- * WC tested up to: 3.9.0
+ * WC tested up to: 4.7.1
  * Author: Soft79
  * License: GPL2
  */
@@ -34,7 +34,7 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
     include_once('includes/soft79-rule-controller-pro.php');
 
     final class SOFT79_WC_Pricing_Rules_Plugin {
-        public $version = '1.4.3';
+        public $version = '1.4.4';
 
         public $admin = null;
 
@@ -253,7 +253,7 @@ if ( ! class_exists( 'SOFT79_WC_Pricing_Rules_Plugin' ) ) {
 
 				// Display "excl tax" or "incl tax"
 				$cart = WC()->cart;
-				if ( $cart->tax_display_cart == 'excl' ) {
+				if ( SOFT79_Rule_Helpers::get_tax_price_display_mode( $cart ) == 'excl' ) {
 					if ( $cart->tax_total > 0 && $cart->prices_include_tax ) {
 						$cart_subtotal .= ' <small>' . WC()->countries->ex_tax_or_vat() . '</small>';
 					}
