@@ -2,7 +2,9 @@
 
 //The heart of the magic
 class SOFT79_Rule_Controller {
-        
+
+    public $options = null;
+
     public function __construct( $options = null ) {
         $this->options = $options;
     }  

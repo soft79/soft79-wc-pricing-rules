@@ -60,6 +60,10 @@ function soft79_wcpr_min_max_price_html( $new_price_html, $original_price_html, 
 
 == Changelog ==
 
+= 1.4.5 =
+*Release Date - ????-??-??*
+* FIX: PHP 8.2: Dynamic Properties are deprecated
+
 = 1.4.4 =
 *Release Date - 2020-12-10*
 * FIX: Deprecated WC_Cart->tax_display_cart()
